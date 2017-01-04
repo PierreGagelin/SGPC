@@ -1,8 +1,14 @@
 <?php
 
+session_start();
+
+// affichage des erreurs
+error_reporting(E_ALL);
+ini_set('display_errors', TRUE);
+ini_set('display_startup_errors', TRUE);
+
 // vérification de la session
 // cas particulier ici : seul les comptes nationaux sont autorisés !
-session_start();
 if(!empty($_SESSION)) {
   if( !isset($_SESSION['identifiant']) ||
       !isset($_SESSION['region']) ||
@@ -27,11 +33,6 @@ if(!empty($_SESSION)) {
 
 <?php
 
-// affichage des erreurs
-error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
-
 // afficher la barre de navigation
 require_once('vue.php');
 afficher_navigation();
@@ -45,6 +46,7 @@ if(!empty($_POST) && isset($_POST["transition"])) {
     "Il est conseillé de vérifier le résultat en important le nouveau " .
     "fichier Excel ainsi généré<br /></div>";
 }
+
 // suppression de l'adhérent
 if(!empty($_POST) && isset($_POST["supprimer"])) {
   if(isset($_POST["numero_adherent"])) {
@@ -52,7 +54,22 @@ if(!empty($_POST) && isset($_POST["supprimer"])) {
   }
 }
 
+// suppression d'une colonne
+if(!empty($_POST) && isset($_POST["supprimer_colonne"])) {
+  supprimer_colonne($_POST["supprimer_colonne"]);
+}
+
 afficher_transition_annuelle();
+
+afficher_supprimer_colonne("c1");
+afficher_supprimer_colonne("c2");
+afficher_supprimer_colonne("c3");
+afficher_supprimer_colonne("c4");
+afficher_supprimer_colonne("c5");
+afficher_supprimer_colonne("c6");
+afficher_supprimer_colonne("c7");
+afficher_supprimer_colonne("c8");
+afficher_supprimer_colonne("c9");
 
 afficher_liste_adherents("national.php", "supprimer");
 

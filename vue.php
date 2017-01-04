@@ -183,7 +183,20 @@ function vue_adherent($numero_adherent) {
   return $vue_adherent;
 }
 
-
+// affiche le bouton pour supprimer une colonne
+function afficher_supprimer_colonne($colonne) {
+  if(!est_national()) {
+    return;
+  }
+  $supprimer_colonne = "<div class='fond_gris'>" .
+    "<h2>Supprimer la colonne $colonne</h2>" .
+    "<p>Cliquez pour supprimer la colonne $colonne : </p>" .
+    '<form method="post" action="national.php">' .
+    "<input type='hidden' name='supprimer_colonne' value='$colonne'>" .
+    "<input type='submit' value='Supprimer'>" .
+    "</form></div>";
+  echo $supprimer_colonne;
+}
 
 // affiche le bouton de basculement des cotisations
 function afficher_transition_annuelle() {
