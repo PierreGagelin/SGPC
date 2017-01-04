@@ -538,15 +538,17 @@ function copier_colonne($col1, $col2) {
   }
 }
 
-// effectue le basculement annuel des cotisations :
-//   - copie des cotisations de l'année vers le bilan de l'année précédente :
-//     - colonne "cotis_payee" copiée dans "adhesion"
-//   - remise à zéro des cotisations de l'année :
-//     - suppression de la colonne "cotis_payee"
+//  effectue le basculement annuel des cotisations :
+//    - copie des cotisations de l'année vers le bilan de l'année précédente :
+//      - colonne "cotis_payee" copiée dans "adhesion"
+//    - remise à zéro des cotisations de l'année :
+//      - suppression de la colonne "cotis_payee"
+//    - suppression de la colonne "date_paiement"
 function basculer_cotisations() {
   if(est_national()) {
     copier_colonne("cotis_payee", "adhesion");
     supprimer_colonne("cotis_payee");
+    supprimer_colonne("date_paiement");
   } else {
     die("Erreur : vous n'avez pas le droit de faire cette opération !");
   }
