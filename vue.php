@@ -188,7 +188,7 @@ function afficher_supprimer_colonne($colonne) {
   if(!est_national()) {
     return;
   }
-  $supprimer_colonne = "<div class='fond_gris'>" .
+  $supprimer_colonne = "<div class='section'>" .
     "<h2>Supprimer la colonne $colonne</h2>" .
     "<p>Cliquez pour supprimer la colonne $colonne : </p>" .
     '<form method="post" action="national.php">' .
