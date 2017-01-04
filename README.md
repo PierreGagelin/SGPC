@@ -1,13 +1,10 @@
 # SGPC
-gestion website using PHPExcel (https://github.com/PHPOffice/PHPExcel)
+Interface de gestion utilisant PHPExcel (https://github.com/PHPOffice/PHPExcel)
 
-This is an interface to maintain a list of users for an association.
+Cette interface permet de maintenir à jour les informations concernant les adhé$
 
-It used to be maintained by hand on distributed Excel files. The web interface aim to be able to both import and export
-Excel files. Each entry has to comply to some regular expressions.
+Elle vient remplacer l'ancienne gestion par fichiers Excels distribués sur diff$
 
-The database is to be filled both from Excel and from the PHP interface.
+L'interface permet aussi de réaliser les opérations via des fichiers Excels. Il$
 
-It tries to have a separated data, view and controller design but it is not completely enforced at all!
-
-NB: don't look at the login page, it is absolutely not meant to be secure haha!
+Une attention particulière est apportée au respect de la conformité des données$
