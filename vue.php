@@ -26,7 +26,7 @@ function afficher_import_excel() {
   echo $import_excel;
 }
 
-// Affiche la barre de navigation
+// Afficher la barre de navigation
 function afficher_navigation() {
   $nav = '<div id="nav">' .
     '<form action="liste_adherents.php" method="get">' .
@@ -46,6 +46,10 @@ function afficher_navigation() {
   if(est_national()) {
     $nav .= '<form action="national.php" method="get">' .
       '<input type="submit" value="Gestion nationale">' .
+      '</form>';
+    
+    $nav .= '<form action="comptes.php" method="get">' .
+      '<input type="submit" value="Gestion des comptes">' .
       '</form>';
   }
   $nav .= '<form action="index.php" method="post">' .
@@ -216,10 +220,54 @@ function afficher_transition_annuelle() {
   echo $transition;
 }
 
+// Afficher la liste des comptes
+function afficher_liste_comptes() {
+    $res = liste_comptes();
+    $liste_comptes = "<div id='section'>" .
+        "<h2>Liste des comptes</h2>";
+    while($row = $res->fetch_array(MYSQLI_ASSOC)) {
+        $liste_comptes .= "region : {$row['region']}<br />";
+        $liste_comptes .= "identifiant : {$row['identifiant']}<br />";
+        $liste_comptes .= "mot de passe : {$row['mot_de_passe']}<br /><br />";
+    }
+    $res->close();
+    $liste_comptes .= '</div>';
+    echo $liste_comptes;
+}
+
+function afficher_ajouter_compte() {
+    $ajouter_compte = "<div class='section'>" .
+    "<h2>Ajouter un compte</h2>" .
+    "<p>Remplir le formulaire pour ajouter le compte : </p>" .
+    '<form method="post" action="comptes.php">' .
+    '<input type="hidden" name="ajouter_compte" value="inutile">' .
+    $vue['region'] .
+    $vue['identifiant'] .
+    $vue['mot_de_passe'] .
+    "<input type='submit' value='Ajouter'>" .
+    "</form></div>";
+    echo $ajouter_compte;
+}
+
+function afficher_supprimer_compte() {
+    $supprimer_compte = "<div class='section'>" .
+    "<h2>Supprimer un compte</h2>" .
+    "<p>Remplir le formulaire pour supprimer le compte : </p>" .
+    '<form method="post" action="comptes.php">' .
+    '<input type="hidden" name="supprimer_compte" value="inutile">' .
+    $vue['region'] .
+    $vue['identifiant'] .
+    $vue['mot_de_passe'] .
+    "<input type='submit' value='Supprimer'>" .
+    "</form></div>";
+    echo $supprimer_compte;
+}
+
 // tableau d'éléments HTML
-// pour le formulaire d'ajout / modification
 $vue = array();
 
+
+// HTML de la gestion des adhérents
 $vue['numero_adherent'] = "<br />";
 $vue['nom'] = "<input type='text' name='nom' maxlength='200'><br />";
 $vue['prenom'] = "<input type='text' name='prenom' maxlength='200'><br />";
@@ -456,6 +504,14 @@ $vue['c6'] = "<input type='text' name='c6' maxlength='200'><br />";
 $vue['c7'] = "<input type='text' name='c7' maxlength='200'><br />";
 $vue['c8'] = "<input type='text' name='c8' maxlength='200'><br />";
 $vue['c9'] = "<input type='text' name='c9' maxlength='200'><br />";
+
+// HTML de la gestion des comptes
+// On utilise aussi la region définie pour la gestion des adhérents
+$vue['identifiant'] = "<input type='text' name='identifiant' " .
+"maxlength='32'><br />";
+$vue['mot_de_passe'] = "<input type='text' name='mot_de_passe' " .
+"maxlength='32'><br />";
+
 
 
 
