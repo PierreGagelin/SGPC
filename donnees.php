@@ -555,12 +555,8 @@ function compte_existe($region, $identifiant, $mot_de_passe) {
 }
 
 // Lister les comptes
+// Ne pas vérifier les droits car on en a besoin à l'index de connexion
 function liste_comptes() {
-    // Vérifier qu'on dispose des droits nationaux
-    if(est_national() == FALSE) {
-        die("Erreur : liste_comptes : votre compte n'a pas le droit<br />");
-    }
-    
     $requete = "SELECT * FROM comptes";
     $res = executer_requete($requete);
     return $res;
