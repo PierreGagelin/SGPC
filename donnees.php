@@ -269,6 +269,29 @@ $region = array(
   "RSI",
   "TN"
 );
+$region_compte = array(
+  "Alsace-Moselle",
+  "Aquitaine",
+  "Auvergne",
+  "Bourgogne",
+  "Bretagne",
+  "Centre",
+  "Nord-Est",
+  "Midi-Pyrenees",
+  "Languedoc",
+  "Centre-Ouest",
+  "Nord-Picardie",
+  "Normandie",
+  "Ile-de-France",
+  "Pays-de-la-Loire",
+  "Paca",
+  "Rhone-Alpes",
+  "Antilles",
+  "Reunion",
+  "RSI",
+  "TN",
+  "National"
+);
 $bureau_nat = array(
   "1",
   "2"
