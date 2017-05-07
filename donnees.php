@@ -551,7 +551,7 @@ function ajouter_compte($region, $identifiant, $mot_de_passe) {
     }
     
     // Vérifier l'intégrité des entrées
-    verifier("region", $region);
+    verifier("region_compte", $region);
     verifier("identifiant", $identifiant);
     verifier("mot_de_passe", $mot_de_passe);
     
@@ -574,7 +574,7 @@ function supprimer_compte($region, $identifiant, $mot_de_passe) {
     }
     
     // Vérifier les entrées
-    verifier("region", $region);
+    verifier("region_compte", $region);
     verifier("identifiant", $identifiant);
     verifier("mot_de_passe", $mot_de_passe);
     
