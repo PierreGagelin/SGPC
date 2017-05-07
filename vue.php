@@ -223,7 +223,7 @@ function afficher_transition_annuelle() {
 // Afficher la liste des comptes
 function afficher_liste_comptes() {
     $res = liste_comptes();
-    $liste_comptes = "<div id='section'>" .
+    $liste_comptes = "<div class='section'>" .
         "<h2>Liste des comptes</h2>";
     while($row = $res->fetch_array(MYSQLI_ASSOC)) {
         $liste_comptes .= "region : {$row['region']}<br />";
@@ -236,6 +236,8 @@ function afficher_liste_comptes() {
 }
 
 function afficher_ajouter_compte() {
+    global vue;
+    
     $ajouter_compte = "<div class='section'>" .
     "<h2>Ajouter un compte</h2>" .
     "<p>Remplir le formulaire pour ajouter le compte : </p>" .
@@ -250,6 +252,8 @@ function afficher_ajouter_compte() {
 }
 
 function afficher_supprimer_compte() {
+    global vue;
+    
     $supprimer_compte = "<div class='section'>" .
     "<h2>Supprimer un compte</h2>" .
     "<p>Remplir le formulaire pour supprimer le compte : </p>" .
