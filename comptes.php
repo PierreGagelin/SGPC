@@ -33,6 +33,7 @@ if(!empty($_SESSION)) {
 
 <?php
 
+require_once('donnees.php');
 // Ajouter le compte
 if(!empty($_POST) && isset($_POST["ajouter_compte"])) {
     if(     isset($_POST["region"]) &&
@@ -62,7 +63,6 @@ require_once('vue.php');
 afficher_navigation();
 afficher_filtre("national.php");
 
-require_once('donnees.php');
 // Afficher les comptes ainsi que les opérations de gestion associées
 afficher_liste_comptes();
 afficher_ajouter_compte();
