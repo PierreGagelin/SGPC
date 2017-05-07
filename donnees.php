@@ -62,10 +62,11 @@ $colonnes = array(
 // connexion à la base de données
 // gestion de l'utf8
 function connexion() {
-  $mysqli = new mysqli(
-    $cfdtl_host,
-    $cfdtl_user, $cfdtl_pswd,
-    $cfdtl_base);
+    global $cfdtl_host;
+    global $cfdtl_user;
+    global $cfdtl_pswd;
+    global $cfdtl_base;
+  $mysqli = new mysqli($cfdtl_host, $cfdtl_user, $cfdtl_pswd, $cfdtl_base);
   
   if ($mysqli->connect_errno) {
     echo "Echec lors de la connexion à MySQL : (" .
@@ -654,13 +655,16 @@ while ($donnees = $reponse->fetch()) {
 */
 
 // requête utilisée pour créer la table des comptes
-$requete = '' .
+function creer_table_comptes() {
+    $requete = '' .
     'CREATE TABLE comptes (' .
         'region VARCHAR(32), ' .
         'identifiant VARCHAR(32), ' .
         'mot_de_passe VARCHAR(32)' .
     ')';
-executer_requete($requete);
+    executer_requete($requete);
+}
+
 
 // FIN FONCTION UTILES AU DEVELOPPEMENT
 //=============================================//
