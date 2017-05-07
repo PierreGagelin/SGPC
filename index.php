@@ -22,7 +22,7 @@ $comptes = $cfdtl_comptes;
 
 // vérifie le mot de passe
 // inscrit les données de sessions en cas de succès
-function connexion($identifiant, $mot_de_passe) {
+function authentification($identifiant, $mot_de_passe) {
   global $comptes;
   foreach(array_keys($comptes) as $region) {
     if(isset($comptes[$region][$identifiant])) {
@@ -46,7 +46,7 @@ if(!empty($_POST)) {
   } else {
     $identifiant = $_POST['identifiant'];
     $mot_de_passe = $_POST['mot_de_passe'];
-    connexion($identifiant, $mot_de_passe);
+    authentification($identifiant, $mot_de_passe);
   }
 }
 ?>
