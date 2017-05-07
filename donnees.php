@@ -1,5 +1,7 @@
 <?php
 
+require_once("confidentiel.php");
+
 // tableau de toutes les colonnes
 $colonnes = array(
   "numero_adherent",
@@ -55,16 +57,15 @@ $colonnes = array(
 );
 //var_dump($colonnes);
 
-require_once("confidentiel.php");
+//===== GESTION BASE DE DONNEES =====//
 
 // connexion à la base de données
-// gestion de l'UTF-8
+// gestion de l'utf8
 function connexion() {
-  global $cfdtl_host;
-  global $cfdtl_user;
-  global $cfdtl_pswd;
-  global $cfdtl_base;
-  $mysqli = new mysqli($cfdtl_host, $cfdtl_user, $cfdtl_pswd, $cfdtl_base);
+  $mysqli = new mysqli(
+    $cfdtl_host,
+    $cfdtl_user, $cfdtl_pswd,
+    $cfdtl_base);
   
   if ($mysqli->connect_errno) {
     echo "Echec lors de la connexion à MySQL : (" .
@@ -96,25 +97,21 @@ function executer_requete($requete) {
   return $res;
 }
 
-// vérifie que la session existe
-function est_connecte() {
-  if(!empty($_SESSION) && isset($_SESSION["region"])) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
-}
+//===================================//
 
 // vérifie que la session a les droits nationaux
 // à appeler avant chaque opération de suppression
 function est_national() {
-  if( est_connecte() &&
+  if( !empty($_SESSION) &&
+      isset($_SESSION["region"]) &&
       $_SESSION["region"] == "National") {
     return TRUE;
   } else {
     return FALSE;
   }
 }
+
+//===== GESTION INTEGRITE DE DONNEES =====//
 
 // tableau qui permet les vérifications
 //   - contient une expression régulière
@@ -173,7 +170,7 @@ $verification = array(
                 "- des lettres de 'a' à 'z'<br />"
   ),
   "remarque_r" => array(
-    "regex" => "#^[\\p{L}0-9\\\,_'. /-]+$#u",
+    "regex" => "#^[\\p{L}0-9\\\,_'. -]+$#u",
     "erreur" => "Erreur :<br />" .
                 "Ne doit contenir que :<br />" .
                 "- des lettres (majuscules, minuscules, accentuées)<br />" .
@@ -206,6 +203,9 @@ $verification["c6"] = $verification["remarque_r"];
 $verification["c7"] = $verification["remarque_r"];
 $verification["c8"] = $verification["remarque_r"];
 $verification["c9"] = $verification["remarque_r"];
+$verification["identifiant"] = $verification["remarque_r"];
+$verification["mot_de_passe"] = $verification["remarque_r"];
+
 
 // affiche un message d'erreur pour une entrée
 // telles que celle définie ci-après
@@ -219,27 +219,24 @@ function erreur_verification($tableau) {
 
 // tableau des entrées possibles par colonne
 // pour les entrées statiquement définies (entre <select> HTML)
-// le préfixe "tvd" permet de distinguer la variable
-//   - le problème est venu avec la variable région qui est redéfinie
-//   - il signifie "tableau de vérification des données"
-$tvd_cotis_payee = array(
+$cotis_payee = array(
   "1",
   "2",
   "3",
   "1/2",
   "3/2"
 );
-$tvd_p_ou_rien = array(
+$p_ou_rien = array(
   "p"
 );
-$tvd_adhesion = $tvd_cotis_payee;
-$tvd_ad = array(
+$adhesion = $cotis_payee;
+$ad = array(
   "AD",
   "AD-RSI",
   "AD-RT",
-  "AD-ARS"
+  "ARS"
 );
-$tvd_profession = array(
+$profession = array(
   "MC",
   "CDC",
   "PHC",
@@ -249,7 +246,7 @@ $tvd_profession = array(
   "MCRA",
   "MCR"
 );
-$tvd_region = array(
+$region = array(
   "Alsace-Moselle",
   "Aquitaine",
   "Auvergne",
@@ -271,12 +268,12 @@ $tvd_region = array(
   "RSI",
   "TN"
 );
-$tvd_bureau_nat = array(
+$bureau_nat = array(
   "1",
   "2"
 );
-$tvd_comite_nat = $tvd_bureau_nat;
-$tvd_fonc_nat = array(
+$comite_nat = $bureau_nat;
+$fonc_nat = array(
   "PN",
   "SN",
   "TN",
@@ -284,10 +281,9 @@ $tvd_fonc_nat = array(
   "TNA",
   "VPN",
   "PH",
-  "TH",
-  "M"
+  "TH"
 );
-$tvd_fonc_nat_irp = array(
+$fonc_nat_irp = array(
   "DS",
   "CCE-T",
   "CCE-S",
@@ -295,17 +291,16 @@ $tvd_fonc_nat_irp = array(
   "CE-SEC",
   "CE-TR"
 );
-$tvd_fonc_reg = array(
+$fonc_reg = array(
   "P",
   "S",
   "T",
-  "M",
   "SA",
   "TA",
   "VP",
   "PH"
 );
-$tvd_fonc_reg_irp = array(
+$fonc_reg_irp = array(
   "DS",
   "DP-T",
   "CD-T",
@@ -315,29 +310,26 @@ $tvd_fonc_reg_irp = array(
   "CE-SEC",
   "CE-TR"
 );
-$tvd_chsc_pc_r = array(
+$chsc_pc_r = array(
   "S",
   "T",
-  "t",
+  "S",
   "s",
   "RS"
 );
-$tvd_chsc_pc_n = $tvd_chsc_pc_r;
-$tvd_com_bud = array(
-  "S",
-  "T",
-  "t",
-  "s",
-  "RS"
+$chsc_pc_n = $chsc_pc_r;
+$com_bud = array(
+  "M",
+  "R"
 );
-$tvd_com_com = $tvd_com_bud;
-$tvd_com_cond = $tvd_com_bud;
-$tvd_com_ce = $tvd_com_bud;
-$tvd_com_dent = $tvd_com_bud;
-$tvd_com_ffass = $tvd_com_bud;
-$tvd_com_pharma = $tvd_com_bud;
-$tvd_com_ret = $tvd_com_bud;
-$tvd_abcd = array(
+$com_com = $com_bud;
+$com_cond = $com_bud;
+$com_ce = $com_bud;
+$com_dent = $com_bud;
+$com_ffass = $com_bud;
+$com_pharma = $com_bud;
+$com_ret = $com_bud;
+$abcd = array(
   "A",
   "B",
   "C",
@@ -348,7 +340,11 @@ $tvd_abcd = array(
 // vérifie que la valeur est cohérente selon la colonne
 function verifier($colonne, $valeur) {
   global $verification;
-  global ${"tvd_$colonne"};
+  try {
+    global ${$colonne};
+  } catch(Exception $e) {
+    echo $e->getMessage() ; "<br />";
+  }
   if(isset($verification[$colonne])) {
     $verif_col = $verification[$colonne];
     if(!isset($verif_col['regex']) || !isset($verif_col['erreur'])) {
@@ -359,23 +355,19 @@ function verifier($colonne, $valeur) {
     if(!preg_match($regex, $valeur)) {
       die($erreur);
     }
-  } elseif(!empty(${"tvd_$colonne"})) {
-    if(!in_array($valeur, ${"tvd_$colonne"})) {
-      erreur_verification(${"tvd_$colonne"});
-    } elseif( false &&
-              $colonne == 'region' &&
-              est_connecte() &&
-              !est_national() &&
-              $valeur != $_SESSION['region']) {
-      //XXX: code mort, laissé à titre historique
-      $message = "Erreur : Vous êtes de la région {$_SESSION['region']} " .
-        "et vous essayez d'ajouter un adhérent à la région $valeur<br />";
-      die($message);
+  } elseif(!empty(${$colonne})) {
+    if(!in_array($valeur, ${$colonne})) {
+      erreur_verification(${$colonne});
     }
   } else {
     die("Erreur : aucune vérification implémentée pour $colonne");
   }
 }
+
+// FIN GESTION INTEGRITE DE DONNEES
+//========================================//
+
+//===== GESTION DES ADHERENTS =====//
 
 // renvoie le dernier numéro d'adhérent
 function dernier_numero_adherent() {
@@ -440,7 +432,7 @@ function insere($numero_adherent, $colonne, $valeur) {
 // dépend de la session sur laquelle on est connecté
 // renvoie le résultat de la requête
 function liste_adherents() {
-  if(!est_connecte()) {
+  if(empty($_SESSION) || !isset($_SESSION['region'])) {
     echo "Attention : Vous n'êtes connectés à aucune session";
     return;
   }
@@ -453,29 +445,6 @@ function liste_adherents() {
   return $res;
 }
 
-// informations spécifiques à 1 adhérent
-function adherent($numero_adherent) {
-  $requete = "SELECT * FROM adherents " .
-    "WHERE numero_adherent='$numero_adherent'";
-  $res = executer_requete($requete);
-  return $res;
-}
-
-// récupère les informations d'un adhérent au format tableau
-function adherent_tableau($numero_adherent) {
-  global $colonnes;
-  $res = adherent($numero_adherent);
-  $tableau = array();
-  $row = $res->fetch_array(MYSQLI_ASSOC);
-  foreach($colonnes as $colonne) {
-    if(isset($row[$colonne])) {
-      $tableau[$colonne] = $row[$colonne];
-    }
-  }
-  $res->close();
-  return $tableau;
-}
-
 // supprime l'adhérent en fonction du numéro d'adhérent
 // DANGEREUX !!!
 function supprimer_adherent($numero_adherent) {
@@ -486,14 +455,10 @@ function supprimer_adherent($numero_adherent) {
   }
 }
 
-// supprime une colonne spécifique pour le numéro d'adhérent donné
-// DANGEREUX !!!
-function supprimer($numero_adherent, $colonne) {
-  $requete = "UPDATE adherents " .
-    "SET $colonne=NULL " .
-    "WHERE numero_adherent = '$numero_adherent'";
-  executer_requete($requete);
-}
+// FIN GESTION DES ADHERENTS
+//=================================//
+
+//===== GESTION NATIONALE =====//
 
 // vide l'intégralité de la colonne $col
 // DANGEREUX !!!
@@ -538,21 +503,97 @@ function copier_colonne($col1, $col2) {
   }
 }
 
-//  effectue le basculement annuel des cotisations :
-//    - copie des cotisations de l'année vers le bilan de l'année précédente :
-//      - colonne "cotis_payee" copiée dans "adhesion"
-//    - remise à zéro des cotisations de l'année :
-//      - suppression de la colonne "cotis_payee"
-//    - suppression de la colonne "date_paiement"
+// effectue le basculement annuel des cotisations :
+//   - copie des cotisations de l'année vers le bilan de l'année précédente :
+//     - colonne "cotis_payee" copiée dans "adhesion"
+//   - remise à zéro des cotisations de l'année :
+//     - suppression de la colonne "cotis_payee"
 function basculer_cotisations() {
   if(est_national()) {
     copier_colonne("cotis_payee", "adhesion");
     supprimer_colonne("cotis_payee");
-    supprimer_colonne("date_paiement");
   } else {
     die("Erreur : vous n'avez pas le droit de faire cette opération !");
   }
 }
+
+// Vérifier si le compte existe
+// Renvoyer vrai si le compte existe, faux sinon
+function compte_existe($region, $identifiant, $mot_de_passe) {
+    global $cfdtl_comptes;
+    if(isset($cfdtl_comptes[$region][$identifiant])) {
+      if($mot_de_passe == $cfdtl_comptes[$region][$identifiant]) {
+        return True;
+      } else {
+        return False;
+      }
+    }
+}
+
+// Lister les comptes
+function liste_comptes() {
+    // Vérifier qu'on dispose des droits nationaux
+    if(est_national() == FALSE) {
+        die("Erreur : liste_comptes : votre compte n'a pas le droit<br />");
+    }
+    
+    $requete = "SELECT * FROM comptes";
+    $res = executer_requete($requete);
+    return $res;
+}
+
+// Ajouter un compte
+function ajouter_compte($region, $identifiant, $mot_de_passe) {
+    // Vérifier qu'on dispose des droits nationaux
+    if(est_national() == FALSE) {
+        die("Erreur : ajouter_compte : votre compte n'a pas le droit<br />");
+    }
+    
+    // Vérifier l'intégrité des entrées
+    verifier("region", $region);
+    verifier("identifiant", $identifiant);
+    verifier("mot_de_passe", $mot_de_passe);
+    
+    // S'arrêter si le compte existe
+    if(compte_existe($region, $identifiant, $mot_de_passe) == TRUE) {
+        die("Erreur : ajouter_compte : le compte existe déjà<br />");
+    }
+    
+    // Ajouter le compte dans la base de données
+    $requete = "INSERT INTO comptes(region, identifiant, mot_de_passe) " .
+        "VALUES ('$region', '$identifiant', '$mot_de_passe')";
+    executer_requete($requete);
+}
+
+// Supprimer un compte
+function supprimer_compte($region, $identifiant, $mot_de_passe) {
+    // Vérifier qu'on dispose des droits nationaux
+    if(est_national() == FALSE) {
+        die("Erreur : supprimer_compte : votre compte n'a pas le droit<br />");
+    }
+    
+    // Vérifier les entrées
+    verifier("region", $region);
+    verifier("identifiant", $identifiant);
+    verifier("mot_de_passe", $mot_de_passe);
+    
+    // S'arrêter si le compte n'existe pas
+    if(compte_existe($region, $identifiant, $mot_de_passe) == FALSE) {
+        die("Erreur : supprimer_compte : le compte n'existe pas<br />");
+    }
+    
+    // Supprimer le compte de la base de données
+    $requete = "DELETE FROM comptes " .
+      "WHERE (region='$region' " .
+      "AND identifiant='$identifiant' " .
+      "AND mot_de_passe='$mot_de_passe')";
+    executer_requete($requete);
+}
+
+// FIN GESTION NATIONALE
+//=============================//
+
+//===== FONCTIONS UTILES AU DEVELOPPEMENT =====//
 
 //XXX: uniquement utile pour le développement
 // affiche les 2 derniers adhérents triés par leur numéro
@@ -611,3 +652,15 @@ while ($donnees = $reponse->fetch()) {
   var_dump($donnees);
 }
 */
+
+// requête utilisée pour créer la table des comptes
+$requete = '' .
+    'CREATE TABLE comptes (' .
+        'region VARCHAR(32), ' .
+        'identifiant VARCHAR(32), ' .
+        'mot_de_passe VARCHAR(32)' .
+    ')';
+executer_requete($requete);
+
+// FIN FONCTION UTILES AU DEVELOPPEMENT
+//=============================================//
