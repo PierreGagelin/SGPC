@@ -236,7 +236,7 @@ function afficher_liste_comptes() {
 }
 
 function afficher_ajouter_compte() {
-    global vue;
+    global $vue;
     
     $ajouter_compte = "<div class='section'>" .
     "<h2>Ajouter un compte</h2>" .
@@ -252,7 +252,7 @@ function afficher_ajouter_compte() {
 }
 
 function afficher_supprimer_compte() {
-    global vue;
+    global $vue;
     
     $supprimer_compte = "<div class='section'>" .
     "<h2>Supprimer un compte</h2>" .
