@@ -62,6 +62,7 @@ require_once('vue.php');
 afficher_navigation();
 afficher_filtre("national.php");
 
+require_once('donnees.php');
 // Afficher les comptes ainsi que les opérations de gestion associées
 afficher_liste_comptes();
 afficher_ajouter_compte();
