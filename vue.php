@@ -243,7 +243,7 @@ function afficher_ajouter_compte() {
     "<p>Remplir le formulaire pour ajouter le compte : </p>" .
     '<form method="post" action="comptes.php">' .
     '<input type="hidden" name="ajouter_compte" value="inutile">' .
-    $vue['region'] .
+    $vue['region_compte'] .
     $vue['identifiant'] .
     $vue['mot_de_passe'] .
     "<input type='submit' value='Ajouter'>" .
@@ -259,7 +259,7 @@ function afficher_supprimer_compte() {
     "<p>Remplir le formulaire pour supprimer le compte : </p>" .
     '<form method="post" action="comptes.php">' .
     '<input type="hidden" name="supprimer_compte" value="inutile">' .
-    $vue['region'] .
+    $vue['region_compte'] .
     $vue['identifiant'] .
     $vue['mot_de_passe'] .
     "<input type='submit' value='Supprimer'>" .
@@ -350,6 +350,31 @@ $vue['region'] = "" .
 '  <option value="Reunion">Reunion</option>' .
 '  <option value="RSI">RSI</option>' .
 '  <option value="TN">TN</option>' .
+'</select><br />';
+$vue['region_compte'] = "" .
+'<select name="region">' .
+'  <option value="">vide</option>' .
+'  <option value="Alsace-Moselle">Alsace-Moselle</option>' .
+'  <option value="Aquitaine">Aquitaine</option>' .
+'  <option value="Auvergne">Auvergne</option>' .
+'  <option value="Bourgogne">Bourgogne</option>' .
+'  <option value="Bretagne">Bretagne</option>' .
+'  <option value="Centre">Centre</option>' .
+'  <option value="Nord-Est">Nord-Est</option>' .
+'  <option value="Midi-Pyrenees">Midi-Pyrenees</option>' .
+'  <option value="Languedoc">Languedoc</option>' .
+'  <option value="Centre-Ouest">Centre-Ouest</option>' .
+'  <option value="Nord-Picardie">Nord-Picardie</option>' .
+'  <option value="Normandie">Normandie</option>' .
+'  <option value="Ile-de-France">Ile-de-France</option>' .
+'  <option value="Pays-de-la-Loire">Pays-de-la-Loire</option>' .
+'  <option value="Paca">Paca</option>' .
+'  <option value="Rhone-Alpes">Rhone-Alpes</option>' .
+'  <option value="Antilles">Antilles</option>' .
+'  <option value="Reunion">Reunion</option>' .
+'  <option value="RSI">RSI</option>' .
+'  <option value="TN">TN</option>' .
+'  <option value="National">National</option>' .
 '</select><br />';
 $vue['echelon'] = "<input type='text' name='echelon' maxlength='200'><br />";
 $vue['bureau_nat'] = "" .

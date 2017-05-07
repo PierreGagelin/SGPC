@@ -33,6 +33,30 @@ if(!empty($_SESSION)) {
 
 <?php
 
+// Ajouter le compte
+if(!empty($_POST) && isset($_POST["ajouter_compte"])) {
+    if(     isset($_POST["region"]) &&
+            isset($_POST["identifiant"]) &&
+            isset($_POST["mot_de_passe"])) {
+        ajouter_compte(
+            $_POST["region"],
+            $_POST["identifiant"],
+            $_POST["mot_de_passe"]);
+    }
+}
+
+// Supprimer le compte
+if(!empty($_POST) && isset($_POST["supprimer_compte"])) {
+    if(     isset($_POST["region"]) &&
+            isset($_POST["identifiant"]) &&
+            isset($_POST["mot_de_passe"])) {
+        supprimer_compte(
+            $_POST["region"],
+            $_POST["identifiant"],
+            $_POST["mot_de_passe"]);
+    }
+}
+
 // Afficher la barre de navigation
 require_once('vue.php');
 afficher_navigation();

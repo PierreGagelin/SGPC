@@ -654,7 +654,7 @@ while ($donnees = $reponse->fetch()) {
 }
 */
 
-// requête utilisée pour créer la table des comptes
+/* fonction utilisée pour créer la table des comptes
 function creer_table_comptes() {
     $requete = '' .
     'CREATE TABLE comptes (' .
@@ -664,7 +664,7 @@ function creer_table_comptes() {
     ')';
     executer_requete($requete);
 }
-
+*/
 
 // FIN FONCTION UTILES AU DEVELOPPEMENT
 //=============================================//
