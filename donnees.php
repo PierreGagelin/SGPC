@@ -469,6 +469,29 @@ function liste_adherents() {
   return $res;
 }
 
+-// informations spécifiques à 1 adhérent
+function adherent($numero_adherent) {
+  $requete = "SELECT * FROM adherents " .
+    "WHERE numero_adherent='$numero_adherent'";
+  $res = executer_requete($requete);
+  return $res;
+}
+
+// récupère les informations d'un adhérent au format tableau
+function adherent_tableau($numero_adherent) {
+  global $colonnes;
+  $res = adherent($numero_adherent);
+  $tableau = array();
+  $row = $res->fetch_array(MYSQLI_ASSOC);
+  foreach($colonnes as $colonne) {
+    if(isset($row[$colonne])) {
+      $tableau[$colonne] = $row[$colonne];
+    }
+  }
+  $res->close();
+  return $tableau;
+}
+
 // supprime l'adhérent en fonction du numéro d'adhérent
 // DANGEREUX !!!
 function supprimer_adherent($numero_adherent) {
