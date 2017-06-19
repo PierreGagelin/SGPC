@@ -100,6 +100,15 @@ function executer_requete($requete) {
 
 //===================================//
 
+// vérifie que la session existe
+function est_connecte() {
+  if(!empty($_SESSION) && isset($_SESSION["region"])) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
+
 // vérifie que la session a les droits nationaux
 // à appeler avant chaque opération de suppression
 function est_national() {
@@ -469,7 +478,7 @@ function liste_adherents() {
   return $res;
 }
 
--// informations spécifiques à 1 adhérent
+// informations spécifiques à 1 adhérent
 function adherent($numero_adherent) {
   $requete = "SELECT * FROM adherents " .
     "WHERE numero_adherent='$numero_adherent'";
@@ -500,6 +509,15 @@ function supprimer_adherent($numero_adherent) {
       "WHERE numero_adherent = '$numero_adherent'";
     executer_requete($requete);
   }
+}
+
+// supprime une colonne spécifique pour le numéro d'adhérent donné
+// DANGEREUX !!!
+function supprimer($numero_adherent, $colonne) {
+  $requete = "UPDATE adherents " .
+    "SET $colonne=NULL " .
+    "WHERE numero_adherent = '$numero_adherent'";
+  executer_requete($requete);
 }
 
 // FIN GESTION DES ADHERENTS
