@@ -61,6 +61,7 @@ if(!empty($_POST) && isset($_POST["supprimer_colonne"])) {
 
 afficher_transition_annuelle();
 
+afficher_supprimer_colonne("date_paiement");
 afficher_supprimer_colonne("c1");
 afficher_supprimer_colonne("c2");
 afficher_supprimer_colonne("c3");

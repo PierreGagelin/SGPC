@@ -289,7 +289,7 @@ $vue['date_paiement'] = "<input type='text' name='date_paiement' " .
 $vue['p_ou_rien'] = "" .
 '<select name="p_ou_rien">' .
 '  <option value="">vide</option>' .
-'  <option value="p">P</option>' .
+'  <option value="p">p</option>' .
 '</select><br />';
 $vue['adhesion'] = "" .
 '<select name="adhesion">' .

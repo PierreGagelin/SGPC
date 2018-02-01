@@ -1,6 +1,6 @@
 <?php
 
-// vérification de la session
+// vérification de la session : seul un National peut se connecter
 session_start();
 if(!empty($_SESSION)) {
   if( !isset($_SESSION['identifiant']) ||
@@ -125,22 +125,21 @@ function traitement_entrees($feuille, $excel_cols) {
 // traitement du fichier importé
 if(!empty($_FILES)) {
   if( !isset($_FILES['fichier_excel']) ||
-      ($_FILES['fichier_excel']['error'] > 0)) {
-    die("Erreur lors de l'upload du fichier excel<br />");
+	  ($_FILES['fichier_excel']['error'] > 0)) {
+	die("Erreur lors de l'upload du fichier excel<br />");
   }
   $extension = substr(strrchr($_FILES['fichier_excel']['name'],'.'),1);
   if($extension != "xlsx") {
-    die("Erreur : le fichier n'est pas au format .xlsx !<br />");
+	die("Erreur : le fichier n'est pas au format .xlsx !<br />");
   }
-  // on déplace le fichier vers le dossier régional
+  // on déplace le fichier vers le dossier national
   if(est_connecte()) {
-    $region = $_SESSION['region'];
-    $destination = "$region/import.xlsx";
-    if(!move_uploaded_file($_FILES['fichier_excel']['tmp_name'], $destination)) {
-      die("Erreur : le fichier n'a pas pu être déplacé<br />");
-    }
+	$destination = "National/import.xlsx";
+	if(!move_uploaded_file($_FILES['fichier_excel']['tmp_name'], $destination)) {
+	  die("Erreur : le fichier n'a pas pu être déplacé<br />");
+	}
   } else {
-    die("Erreur : votre session a expiré, reconnectez vous<br />");
+	die("Erreur : votre session a expiré, reconnectez vous<br />");
   }
   $fileType = 'Excel2007';
   $objReader = PHPExcel_IOFactory::createReader($fileType);
@@ -150,8 +149,6 @@ if(!empty($_FILES)) {
   afficher_colonnes_manquantes($excel_cols);
   traitement_entrees($feuille, $excel_cols);
 }
-
-
 
 
 /*

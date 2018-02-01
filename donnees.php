@@ -180,7 +180,7 @@ $verification = array(
                 "- des lettres de 'a' à 'z'<br />"
   ),
   "remarque_r" => array(
-    "regex" => "#^[\\p{L}0-9\\\,_'. -]+$#u",
+    "regex" => "#^[\\p{L}0-9\\\,_'. /-]+$#u",
     "erreur" => "Erreur :<br />" .
                 "Ne doit contenir que :<br />" .
                 "- des lettres (majuscules, minuscules, accentuées)<br />" .
@@ -189,6 +189,7 @@ $verification = array(
                 "- des espaces<br />" .
                 "- des apostrophes<br />" .
                 "- des underscores<br />" .
+                "- des slashs<br />" .
                 "- des points<br />" .
                 "- des tirets<br />"
   )
@@ -244,7 +245,7 @@ $ad = array(
   "AD",
   "AD-RSI",
   "AD-RT",
-  "ARS"
+  "AD-ARS"
 );
 $profession = array(
   "MC",
@@ -328,6 +329,7 @@ $fonc_reg = array(
   "P",
   "S",
   "T",
+  "M",
   "SA",
   "TA",
   "VP",
@@ -346,7 +348,7 @@ $fonc_reg_irp = array(
 $chsc_pc_r = array(
   "S",
   "T",
-  "S",
+  "t",
   "s",
   "RS"
 );
