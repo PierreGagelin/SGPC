@@ -78,7 +78,3 @@ afficher_liste_adherents("national.php", "supprimer");
 
 </body>
 </html>
-
-
-
-

@@ -100,18 +100,18 @@ function ajouter_messages($message_html, $message_plain, $frontieres) {
   global $passage_ligne;
   $ouverture_frontiere = $frontieres["ouverture"];
   $fermeture_frontiere = $frontieres["fermeture"];
-  
+
   $message = $ouverture_frontiere;
   $message .= header_PLAIN();
   $message .= $passage_ligne . $message_plain . $passage_ligne;
-  
+
   $message .= $ouverture_frontiere;
   $message .= header_HTML();
   $message .= $passage_ligne . $message_html . $passage_ligne;
-  
+
   $message .= $fermeture_frontiere;
   $message .= $fermeture_frontiere;
-  
+
   return $message;
 }
 
@@ -122,21 +122,21 @@ function test_mail() {
   $frontiere = $frontieres["frontiere"];
   $ouverture_frontiere = $frontieres["ouverture"];
   $fermeture_frontiere = $frontieres["fermeture"];
-  
+
   $message_html = "<html><head></head><body><b>Salut</b> poulet</body></html>";
   $message_plain = "Salut ma poule";
-  
+
   $message = $ouverture_frontiere;
   $message .= header_PLAIN();
   $message .= $passage_ligne . $message_plain . $passage_ligne;
-  
+
   $message .= $ouverture_frontiere;
   $message .= header_HTML();
   $message .= $passage_ligne . $message_html . $passage_ligne;
-  
+
   $message .= $fermeture_frontiere;
   $message .= $fermeture_frontiere;
-  
+
   $header = header_mail($contact_sgpc, $contact_sgpc,
                         "multipart/alternative", $frontiere);
   $sujet = "Mail de test";
@@ -151,7 +151,7 @@ function test_mail() {
 //    @colonne : colonne concernée par la suppression
 //    @message : message indiquant la provenance de l'action
 //    @adherent_legacy : état de l'adhérent avant suppression
-function mail_supprimer_colonne($numero_adherent, $colonne, $message, 
+function mail_supprimer_colonne($numero_adherent, $colonne, $message,
     $adherent_legacy) {
   if(!est_connecte()) {
     return;
@@ -161,7 +161,7 @@ function mail_supprimer_colonne($numero_adherent, $colonne, $message,
   $frontieres = generer_frontiere();
   $session_region = $_SESSION["region"];
   $session_identifiant = $_SESSION["identifiant"];
-  
+
   $message_html = "<html><head></head><body>" .
     "<p>Ceci est un mail automatique de l'interface de gestion de la " .
     "trésorerie de SGPC-CFE-CGC.</p>" .
@@ -177,7 +177,7 @@ function mail_supprimer_colonne($numero_adherent, $colonne, $message,
     "</body></html>";
   $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
   $message = ajouter_messages($message_html, $message_plain, $frontieres);
-  
+
   $header = header_mail($contact_mail, $contact_sgpc,
                         "multipart/alternative", $frontieres["frontiere"]);
   $sujet = "[Mail-Automatique] Suppression d'une information adhérent";
@@ -193,7 +193,7 @@ function mail_creer_adherent($numero_adherent, $message) {
   $frontieres = generer_frontiere();
   $session_region = $_SESSION["region"];
   $session_identifiant = $_SESSION["identifiant"];
-  
+
   $message_html = "<html><head></head><body>" .
     "<p>Ceci est un mail automatique de l'interface de gestion de la " .
     "trésorerie de SGPC-CFE-CGC.</p>" .
@@ -207,7 +207,7 @@ function mail_creer_adherent($numero_adherent, $message) {
     "</body></html>";
   $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
   $message = ajouter_messages($message_html, $message_plain, $frontieres);
-  
+
   $header = header_mail($contact_mail, $contact_sgpc,
                         "multipart/alternative", $frontieres["frontiere"]);
   $sujet = "[Mail-Automatique] Création d'un nouvel adhérent";
@@ -224,7 +224,7 @@ function mail_modifier_adherent($modifications, $message, $adherent_legacy) {
   $frontieres = generer_frontiere();
   $session_region = $_SESSION["region"];
   $session_identifiant = $_SESSION["identifiant"];
-  
+
   $message_html = "<html><head></head><body>" .
     "<p>Ceci est un mail automatique de l'interface de gestion de la " .
     "trésorerie de SGPC-CFE-CGC.</p>" .
@@ -242,7 +242,7 @@ function mail_modifier_adherent($modifications, $message, $adherent_legacy) {
     "</body></html>";
   $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
   $message = ajouter_messages($message_html, $message_plain, $frontieres);
-  
+
   $header = header_mail($contact_mail, $contact_sgpc,
                         "multipart/alternative", $frontieres["frontiere"]);
   $sujet = "[Mail-Automatique] Modification d'un adhérent";
@@ -250,8 +250,3 @@ function mail_modifier_adherent($modifications, $message, $adherent_legacy) {
 }
 
 ?>
-
-
-
-
-

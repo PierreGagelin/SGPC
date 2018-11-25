@@ -32,7 +32,7 @@ if( !empty($_POST) && isset($_POST['supprimer_ligne']) &&
   $adherent_legacy = adherent_tableau($numero_adherent);
   $colonne = $_POST['colonne'];
   supprimer($numero_adherent, $colonne);
-  
+
   // envoi d'un mail pour prévenir de la suppression
   require_once("mail.php");
   $mail_message = "<p>Message provenant de 'ajouter_adherent.php' : </p>" .
@@ -61,7 +61,7 @@ afficher_filtre("ajouter_adherent.php");
 <div id="page">
 <h2>Ajout ou modification d'un adhérent</h2>
 <p>
-Pour ajouter ou modifier un adhérent il suffit de remplir les informations 
+Pour ajouter ou modifier un adhérent il suffit de remplir les informations
 dans le formulaire ci dessous :
 </p>
 
@@ -152,8 +152,3 @@ if($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent'])) {
 
 </body>
 </html>
-
-
-
-
-

@@ -84,8 +84,3 @@ echo $lien_telecharger;
 
 </body>
 </html>
-
-
-
-
-

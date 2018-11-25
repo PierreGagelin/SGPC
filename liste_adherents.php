@@ -40,7 +40,7 @@ if(!empty($_POST) && isset($_POST['ajouter'])) {
     $nom = $_POST['nom'];
     $prenom = $_POST['prenom'];
     $numero_adherent = creer_adherent($nom, $prenom);
-    
+
     // on vérifie chaque entrée possible et on ajoute
     foreach($colonnes as $colonne) {
       if(isset($_POST[$colonne])) {
@@ -48,7 +48,7 @@ if(!empty($_POST) && isset($_POST['ajouter'])) {
         insere($numero_adherent, $colonne, $valeur);
       }
     }
-    
+
     // on notifie par mail la création
     require_once("mail.php");
     $message = "<p>Message provenant de 'liste_adherents.php' :</p>" .
@@ -70,7 +70,7 @@ if(!empty($_POST) && isset($_POST['ajouter'])) {
       $mail_modifications[$colonne] = $valeur;
     }
   }
-  
+
   // notification par mail des modifications réalisées
   require_once("mail.php");
   $message = "<p>Message provenant de 'liste_adherents.php' :</p>" .

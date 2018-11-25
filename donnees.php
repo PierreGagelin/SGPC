@@ -67,16 +67,16 @@ function connexion() {
     global $cfdtl_pswd;
     global $cfdtl_base;
   $mysqli = new mysqli($cfdtl_host, $cfdtl_user, $cfdtl_pswd, $cfdtl_base);
-  
+
   if ($mysqli->connect_errno) {
     echo "Echec lors de la connexion à MySQL : (" .
       $mysqli->connect_errno . ") " . $mysqli->connect_error;
   }
-  
+
   if (!$mysqli->set_charset("utf8")) {
     die("Incapable de charger l'UTF-8");
   }
-  
+
   return $mysqli;
 }
 
@@ -611,17 +611,17 @@ function ajouter_compte($region, $identifiant, $mot_de_passe) {
     if(est_national() == FALSE) {
         die("Erreur : ajouter_compte : votre compte n'a pas le droit<br />");
     }
-    
+
     // Vérifier l'intégrité des entrées
     verifier("region_compte", $region);
     verifier("identifiant", $identifiant);
     verifier("mot_de_passe", $mot_de_passe);
-    
+
     // S'arrêter si le compte existe
     if(compte_existe($region, $identifiant, $mot_de_passe) == TRUE) {
         die("Erreur : ajouter_compte : le compte existe déjà<br />");
     }
-    
+
     // Ajouter le compte dans la base de données
     $requete = "INSERT INTO comptes(region, identifiant, mot_de_passe) " .
         "VALUES ('$region', '$identifiant', '$mot_de_passe')";
@@ -634,17 +634,17 @@ function supprimer_compte($region, $identifiant, $mot_de_passe) {
     if(est_national() == FALSE) {
         die("Erreur : supprimer_compte : votre compte n'a pas le droit<br />");
     }
-    
+
     // Vérifier les entrées
     verifier("region_compte", $region);
     verifier("identifiant", $identifiant);
     verifier("mot_de_passe", $mot_de_passe);
-    
+
     // S'arrêter si le compte n'existe pas
     if(compte_existe($region, $identifiant, $mot_de_passe) == FALSE) {
         die("Erreur : supprimer_compte : le compte n'existe pas<br />");
     }
-    
+
     // Supprimer le compte de la base de données
     $requete = "DELETE FROM comptes " .
       "WHERE (region='$region' " .
@@ -705,7 +705,7 @@ foreach($colonnes as $colonne) {
   } else {
     $requete .= ", $colonne";
   }
-  $requete .= " VARCHAR(256)"; 
+  $requete .= " VARCHAR(256)";
 }
 $requete .= ')';
 //echo $requete;

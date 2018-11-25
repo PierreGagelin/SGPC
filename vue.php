@@ -47,7 +47,7 @@ function afficher_navigation() {
     $nav .= '<form action="national.php" method="get">' .
       '<input type="submit" value="Gestion nationale">' .
       '</form>';
-    
+
     $nav .= '<form action="comptes.php" method="get">' .
       '<input type="submit" value="Gestion des comptes">' .
       '</form>';
@@ -237,7 +237,7 @@ function afficher_liste_comptes() {
 
 function afficher_ajouter_compte() {
     global $vue;
-    
+
     $ajouter_compte = "<div class='section'>" .
     "<h2>Ajouter un compte</h2>" .
     "<p>Remplir le formulaire pour ajouter le compte : </p>" .
@@ -253,7 +253,7 @@ function afficher_ajouter_compte() {
 
 function afficher_supprimer_compte() {
     global $vue;
-    
+
     $supprimer_compte = "<div class='section'>" .
     "<h2>Supprimer un compte</h2>" .
     "<p>Remplir le formulaire pour supprimer le compte : </p>" .
@@ -540,9 +540,3 @@ $vue['identifiant'] = "<input type='text' name='identifiant' " .
 "maxlength='32'><br />";
 $vue['mot_de_passe'] = "<input type='text' name='mot_de_passe' " .
 "maxlength='32'><br />";
-
-
-
-
-
-
