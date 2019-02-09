@@ -9,17 +9,20 @@ ini_set('display_startup_errors', TRUE);
 
 // vérification de la session
 // cas particulier ici : seul les comptes nationaux sont autorisés !
-if(!empty($_SESSION)) {
-  if( !isset($_SESSION['identifiant']) ||
-      !isset($_SESSION['region']) ||
-      $_SESSION['region'] != "National") {
+if (!empty($_SESSION))
+{
+    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']) || $_SESSION['region'] != "National")
+    {
+        header('Location: index.php');
+        exit();
+    }
+}
+else
+{
     header('Location: index.php');
     exit();
-  }
-} else {
-  header('Location: index.php');
-  exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -34,27 +37,22 @@ if(!empty($_SESSION)) {
 <?php
 
 require_once('donnees.php');
+
 // Ajouter le compte
-if(!empty($_POST) && isset($_POST["ajouter_compte"])) {
-    if(     isset($_POST["region"]) &&
-            isset($_POST["identifiant"]) &&
-            isset($_POST["mot_de_passe"])) {
-        ajouter_compte(
-            $_POST["region"],
-            $_POST["identifiant"],
-            $_POST["mot_de_passe"]);
+if (!empty($_POST) && isset($_POST["ajouter_compte"]))
+{
+    if (isset($_POST["region"]) && isset($_POST["identifiant"]) && isset($_POST["mot_de_passe"]))
+    {
+        ajouter_compte($_POST["region"], $_POST["identifiant"], $_POST["mot_de_passe"]);
     }
 }
 
 // Supprimer le compte
-if(!empty($_POST) && isset($_POST["supprimer_compte"])) {
-    if(     isset($_POST["region"]) &&
-            isset($_POST["identifiant"]) &&
-            isset($_POST["mot_de_passe"])) {
-        supprimer_compte(
-            $_POST["region"],
-            $_POST["identifiant"],
-            $_POST["mot_de_passe"]);
+if (!empty($_POST) && isset($_POST["supprimer_compte"]))
+{
+    if (isset($_POST["region"]) && isset($_POST["identifiant"]) && isset($_POST["mot_de_passe"]))
+    {
+        supprimer_compte($_POST["region"], $_POST["identifiant"], $_POST["mot_de_passe"]);
     }
 }
 

@@ -2,16 +2,18 @@
 
 // vérification de la session : seul un National peut se connecter
 session_start();
-if(!empty($_SESSION)) {
-  if( !isset($_SESSION['identifiant']) ||
-      !isset($_SESSION['region']) ||
-      $_SESSION['region'] != "National") {
+if (!empty($_SESSION))
+{
+    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']) || $_SESSION['region'] != "National")
+    {
+        header('Location: index.php');
+        exit();
+    }
+}
+else
+{
     header('Location: index.php');
     exit();
-  }
-} else {
-  header('Location: index.php');
-  exit();
 }
 ?>
 
@@ -45,109 +47,198 @@ require_once('Classes/PHPExcel.php');
 // doit au moins contenir :
 //   - nom
 //   - prenom
-//   - region
-function recuperer_colonnes($feuille) {
-  $excel_cols = array();
-  global $colonnes;
-  $HCAL = $feuille->getHighestColumn();
-  $HCAL++;
-  for ($CAL = 'A'; $CAL != $HCAL; $CAL++) {
-    $col = $feuille->getCell($CAL . '1')->getValue();
-    if(in_array($col, $colonnes)) {
-      $excel_cols[$col] = $CAL;
+function recuperer_colonnes($feuille)
+{
+    $excel_cols = array();
+    global $colonnes;
+
+    $HCAL = $feuille->getHighestColumn();
+    $HCAL++;
+    for ($CAL = 'A'; $CAL != $HCAL; $CAL++)
+    {
+        $col = $feuille->getCell($CAL . '1')->getValue();
+        if (in_array($col, $colonnes))
+        {
+            $excel_cols[$col] = $CAL;
+        }
     }
-  }
-  if( !isset($excel_cols['nom']) ||
-      !isset($excel_cols['prenom'])) {
-    $erreur = "Erreur : " .
-      "lors de la récupération initiale des colonnes : <br />" .
-      "il faut au moins les colonnes nom et prenom " .
-      "dans le fichier que vous avez téléchargé<br />";
-    die($erreur);
-  }
-  return $excel_cols;
+    if (!isset($excel_cols['nom']) || !isset($excel_cols['prenom']))
+    {
+        $erreur = "Erreur : " .
+            "lors de la récupération initiale des colonnes : <br />" .
+            "il faut au moins les colonnes nom et prenom " .
+            "dans le fichier que vous avez téléchargé<br />";
+        die($erreur);
+    }
+
+    return $excel_cols;
 }
 
 // affiche les colonnes manquantes
-function afficher_colonnes_manquantes($excel_cols) {
-  global $colonnes;
-  $incomplet = FALSE;
-  foreach($colonnes as $colonne) {
-    $clefs = array_keys($excel_cols);
-    if(!in_array($colonne, $clefs)) {
-      $incomplet = TRUE;
-      echo "la colonne $colonne n'a pas été trouvée, pensez à l'ajouter <br />";
+function afficher_colonnes_manquantes($excel_cols)
+{
+    global $colonnes;
+    $incomplet = FALSE;
+    foreach($colonnes as $colonne)
+    {
+        $clefs = array_keys($excel_cols);
+        if (!in_array($colonne, $clefs))
+        {
+            $incomplet = TRUE;
+            echo "la colonne $colonne n'a pas été trouvée, pensez à l'ajouter <br />";
+        }
     }
-  }
-  if(!$incomplet) {
-    echo "Félicitations, votre fichier comporte toutes les colonnes <br />";
-  }
+    if (!$incomplet)
+    {
+        echo "Félicitations, votre fichier comporte toutes les colonnes <br />";
+    }
 }
 
 // mets à jour les entrées ayant un numéro d'adhérent existant
 // crée un adhérent pour celles qui n'ont pas de numéro
-function traitement_entrees($feuille, $excel_cols) {
-  $clefs = array_keys($excel_cols);
-  $num_ad_existe = isset($excel_cols['numero_adherent']);
-  $HRN = $feuille->getHighestRow();
-  for($ligne = 2 ; $ligne < $HRN + 1 ; $ligne++) {
-    $nom = $feuille->getCell($excel_cols['nom'] . $ligne)->getValue();
-    $prenom = $feuille->getCell($excel_cols['prenom'] . $ligne)->getValue();
-    echo "Traitement de la ligne $ligne :<br />" .
-      "--nom : $nom<br />--prenom : $prenom<br />";
-    if($num_ad_existe) {
-      $num_ad = $feuille->getCell($excel_cols['numero_adherent'] . $ligne)
-                        ->getValue();
-    } else {
-      $num_ad = '';
+function traitement_entrees($feuille, $excel_cols)
+{
+    $clefs = array_keys($excel_cols);
+    $num_ad_existe = isset($excel_cols['numero_adherent']);
+    $HRN = $feuille->getHighestRow();
+    for($ligne = 2 ; $ligne < $HRN + 1 ; $ligne++)
+    {
+        $nom = $feuille->getCell($excel_cols['nom'] . $ligne)->getValue();
+        $prenom = $feuille->getCell($excel_cols['prenom'] . $ligne)->getValue();
+
+        echo "Traitement d'une ligne [numero=$ligne ; nom=$nom ; prenom=$prenom]<br />";
+
+        if ($num_ad_existe)
+        {
+            $num_ad = $feuille->getCell($excel_cols['numero_adherent'] . $ligne)->getValue();
+        }
+        else
+        {
+            $num_ad = '';
+        }
+
+        if (empty($num_ad))
+        {
+            $num_ad = creer_adherent($nom, $prenom);
+        }
+        elseif (!adherent_existe($num_ad))
+        {
+            // le numéro est libre, on ajoute cet adhérent
+            verifier("numero_adherent", $num_ad);
+            $requete = "INSERT INTO adherents(numero_adherent) VALUES ('$num_ad')";
+            executer_requete($requete);
+        }
+
+        foreach($clefs as $clef)
+        {
+            $valeur = $feuille->getCell($excel_cols[$clef] . $ligne)->getValue();
+            // les deux lignes qui suivent sont un peu hasardeuses...
+            // la feuille Excel est censée être en UTF-8 directement
+            $valeur = iconv("UTF-8", "ISO-8859-1", $valeur);
+            $valeur = utf8_encode($valeur);
+            echo "...verification colonne : $clef, valeur : $valeur<br />";
+            insere($num_ad, $clef, $valeur);
+        }
+
+        echo "----ligne traitée avec succès [numero=$ligne]<br /><br />";
     }
-    if(empty($num_ad)) {
-      $num_ad = creer_adherent($nom, $prenom);
-    } elseif(!adherent_existe($num_ad)) {
-      // le numéro est libre, on ajoute cet adhérent
-      verifier("numero_adherent", $num_ad);
-      $requete = "INSERT INTO adherents(numero_adherent) VALUES ('$num_ad')";
-      executer_requete($requete);
+}
+
+//
+// Parse an Excel sheet
+//
+function parse_excel($feuille)
+{
+    $imported = array();
+
+    $excel_cols = recuperer_colonnes($feuille);
+    afficher_colonnes_manquantes($excel_cols);
+
+    $clefs = array_keys($excel_cols);
+    if (isset($excel_cols['numero_adherent']) == FALSE)
+    {
+        die("Erreur : colonne numero_adherent requise");
     }
-    foreach($clefs as $clef) {
-      $valeur = $feuille->getCell($excel_cols[$clef] . $ligne)->getValue();
-      // les deux lignes qui suivent sont un peu hasardeuses...
-      // la feuille Excel est censée être en UTF-8 directement
-      $valeur = iconv("UTF-8", "ISO-8859-1", $valeur);
-      $valeur = utf8_encode($valeur);
-      echo "...verification colonne : $clef, valeur : $valeur<br />";
-      insere($num_ad, $clef, $valeur);
+
+    $HRN = $feuille->getHighestRow();
+    for ($ligne = 2 ; $ligne < $HRN + 1 ; $ligne++)
+    {
+        $num_ad = $feuille->getCell($excel_cols['numero_adherent'] . $ligne)->getValue();
+        $nom = $feuille->getCell($excel_cols['nom'] . $ligne)->getValue();
+        $prenom = $feuille->getCell($excel_cols['prenom'] . $ligne)->getValue();
+
+        echo "Parsing line [index=$ligne ; adherent=$num_ad ; nom=$nom ; prenom=$prenom]<br />";
+
+        if (empty($num_ad) == TRUE)
+        {
+            die("Erreur : numéro d'adhérent vide !");
+        }
+
+        foreach ($clefs as $clef)
+        {
+            if ($clef == "numero_adherent")
+            {
+                continue;
+            }
+
+            $valeur = $feuille->getCell($excel_cols[$clef] . $ligne)->getValue();
+            // les deux lignes qui suivent sont un peu hasardeuses...
+            // la feuille Excel est censée être en UTF-8 directement
+            $valeur = iconv("UTF-8", "ISO-8859-1", $valeur);
+            $valeur = utf8_encode($valeur);
+
+            if (empty($valeur) == TRUE)
+            {
+                continue;
+            }
+
+            echo "- verify entry [column=$clef ; value=$valeur]<br />";
+            verifier($clef, $valeur);
+
+            $imported[$num_ad][$clef] = $valeur;
+        }
+
+        echo "---- ligne traitée avec succès [index=$ligne]<br /><br />";
     }
-    echo "----ligne $ligne traitée avec succès<br /><br />";
-  }
+
+    echo "Import finished<br />";
+    echo "<pre>", var_dump($imported), "</pre>";
 }
 
 // traitement du fichier importé
-if(!empty($_FILES)) {
-  if( !isset($_FILES['fichier_excel']) ||
-	  ($_FILES['fichier_excel']['error'] > 0)) {
-	die("Erreur lors de l'upload du fichier excel<br />");
-  }
-  $extension = substr(strrchr($_FILES['fichier_excel']['name'],'.'),1);
-  if($extension != "xlsx") {
-	die("Erreur : le fichier n'est pas au format .xlsx !<br />");
-  }
-  // on déplace le fichier vers le dossier national
-  if(est_connecte()) {
-	$destination = "National/import.xlsx";
-	if(!move_uploaded_file($_FILES['fichier_excel']['tmp_name'], $destination)) {
-	  die("Erreur : le fichier n'a pas pu être déplacé<br />");
-	}
-  } else {
-	die("Erreur : votre session a expiré, reconnectez vous<br />");
-  }
-  $fileType = 'Excel2007';
-  $objReader = PHPExcel_IOFactory::createReader($fileType);
-  $objPHPExcel = $objReader->load($destination);
-  $feuille = $objPHPExcel->setActiveSheetIndex(0);
-  $excel_cols = recuperer_colonnes($feuille);
-  afficher_colonnes_manquantes($excel_cols);
-  traitement_entrees($feuille, $excel_cols);
+if (!empty($_FILES))
+{
+    if (!isset($_FILES['fichier_excel']) || ($_FILES['fichier_excel']['error'] > 0))
+    {
+        die("Erreur lors de l'upload du fichier excel<br />");
+    }
+    $extension = substr(strrchr($_FILES['fichier_excel']['name'],'.'),1);
+    if ($extension != "xlsx")
+    {
+        die("Erreur : le fichier n'est pas au format .xlsx !<br />");
+    }
+    // on déplace le fichier vers le dossier national
+    if (est_connecte())
+    {
+        $destination = "National/import.xlsx";
+        if (!move_uploaded_file($_FILES['fichier_excel']['tmp_name'], $destination))
+        {
+            die("Erreur : le fichier n'a pas pu être déplacé<br />");
+        }
+    }
+    else
+    {
+        die("Erreur : votre session a expiré, reconnectez vous<br />");
+    }
+
+    $fileType = 'Excel2007';
+    $objReader = PHPExcel_IOFactory::createReader($fileType);
+    $objPHPExcel = $objReader->load($destination);
+    $feuille = $objPHPExcel->setActiveSheetIndex(0);
+    parse_excel($feuille);
+    // $excel_cols = recuperer_colonnes($feuille);
+    // afficher_colonnes_manquantes($excel_cols);
+    // traitement_entrees($feuille, $excel_cols);
 }
 
 

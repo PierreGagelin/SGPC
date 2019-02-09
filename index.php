@@ -1,19 +1,23 @@
 <?php
 
 // routine de déconnexion
-if(!empty($_POST)) {
-  if(isset($_POST['deconnexion'])) {
-    session_start();
-    $_SESSION = array();
-  }
+if (!empty($_POST))
+{
+    if (isset($_POST['deconnexion']))
+    {
+        session_start();
+        $_SESSION = array();
+    }
 }
 
 session_start();
-if(!empty($_SESSION)) {
-  if(isset($_SESSION['identifiant']) && isset($_SESSION['region'])) {
-    header('Location: liste_adherents.php');
-    exit();
-  }
+if (!empty($_SESSION))
+{
+    if (isset($_SESSION['identifiant']) && isset($_SESSION['region']))
+    {
+        header('Location: liste_adherents.php');
+        exit();
+    }
 }
 
 require_once("confidentiel.php");
@@ -22,33 +26,44 @@ $comptes = $cfdtl_comptes;
 
 // vérifie le mot de passe
 // inscrit les données de sessions en cas de succès
-function authentification($identifiant, $mot_de_passe) {
-  global $comptes;
-  foreach(array_keys($comptes) as $region) {
-    if(isset($comptes[$region][$identifiant])) {
-      if($mot_de_passe == $comptes[$region][$identifiant]) {
-        $_SESSION['identifiant'] = $identifiant;
-        $_SESSION['region'] = $region;
-        header('Location: liste_adherents.php');
-        exit();
-      } else {
-        echo "Mot de passe erroné !<br />";
-        return;
-      }
+function authentification($identifiant, $mot_de_passe)
+{
+    global $comptes;
+    foreach(array_keys($comptes) as $region)
+    {
+        if (isset($comptes[$region][$identifiant]))
+        {
+            if ($mot_de_passe == $comptes[$region][$identifiant])
+            {
+                $_SESSION['identifiant'] = $identifiant;
+                $_SESSION['region'] = $region;
+                header('Location: liste_adherents.php');
+                exit();
+            }
+            else
+            {
+                echo "Mot de passe erroné !<br />";
+                return;
+            }
+        }
     }
-  }
-  echo "Identifiant erroné !<br />";
+    echo "Identifiant erroné !<br />";
 }
 
-if(!empty($_POST)) {
-  if(!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe'])) {
-    echo "Vous avez oublié l'identifiant ou le mot de passe !";
-  } else {
-    $identifiant = $_POST['identifiant'];
-    $mot_de_passe = $_POST['mot_de_passe'];
-    authentification($identifiant, $mot_de_passe);
-  }
+if (!empty($_POST))
+{
+    if (!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe']))
+    {
+        echo "Vous avez oublié l'identifiant ou le mot de passe !";
+    }
+    else
+    {
+        $identifiant = $_POST['identifiant'];
+        $mot_de_passe = $_POST['mot_de_passe'];
+        authentification($identifiant, $mot_de_passe);
+    }
 }
+
 ?>
 
 <!DOCTYPE html>

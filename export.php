@@ -2,15 +2,20 @@
 
 // vérification de la session
 session_start();
-if(!empty($_SESSION)) {
-  if(!isset($_SESSION['identifiant']) || !isset($_SESSION['region'])) {
+if (!empty($_SESSION))
+{
+    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']))
+    {
+        header('Location: index.php');
+        exit();
+    }
+}
+else
+{
     header('Location: index.php');
     exit();
-  }
-} else {
-  header('Location: index.php');
-  exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -50,22 +55,26 @@ $adherents = liste_adherents();
 // on entre les noms de colonne sur la première ligne
 $xls_col = 'A';
 $xls_lig = '1';
-foreach($colonnes as $colonne) {
-  $feuille->setCellValue($xls_col . $xls_lig, $colonne);
-  $xls_col++;
+foreach($colonnes as $colonne)
+{
+    $feuille->setCellValue($xls_col . $xls_lig, $colonne);
+    $xls_col++;
 }
 
 // on rempli les données ligne par ligne
 $xls_lig++;
-while($row = $adherents->fetch_array(MYSQLI_ASSOC)) {
-  $xls_col = 'A';
-  foreach($colonnes as $colonne) {
-    if(isset($row[$colonne])) {
-      $feuille->setCellValue($xls_col . $xls_lig, $row[$colonne]);
+while($row = $adherents->fetch_array(MYSQLI_ASSOC))
+{
+    $xls_col = 'A';
+    foreach($colonnes as $colonne)
+    {
+        if (isset($row[$colonne]))
+        {
+            $feuille->setCellValue($xls_col . $xls_lig, $row[$colonne]);
+        }
+        $xls_col++;
     }
-    $xls_col++;
-  }
-  $xls_lig++;
+    $xls_lig++;
 }
 $adherents->close();
 
@@ -75,8 +84,10 @@ $adherents->close();
 $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 $objWriter->save("{$_SESSION['region']}/export.xlsx");
 
-$lien_telecharger = "<form action='{$_SESSION['region']}/export.xlsx' " .
-  "method='get'><input type='submit' value='Téléchargez le fichier'></form>";
+$lien_telecharger = "";
+$lien_telecharger .= "<form action='{$_SESSION['region']}/export.xlsx' method='get'>";
+$lien_telecharger .= "    <input type='submit' value='Téléchargez le fichier'>";
+$lien_telecharger .= "</form>";
 echo $lien_telecharger;
 
 ?>
