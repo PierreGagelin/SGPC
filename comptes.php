@@ -2,22 +2,13 @@
 
 session_start();
 
-// affichage des erreurs
 error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
 
-// vérification de la session
-// cas particulier ici : seul les comptes nationaux sont autorisés !
-if (!empty($_SESSION))
-{
-    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']) || $_SESSION['region'] != "National")
-    {
-        header('Location: index.php');
-        exit();
-    }
-}
-else
+require_once('donnees.php');
+
+if (is_priviledged() == false)
 {
     header('Location: index.php');
     exit();
@@ -36,24 +27,39 @@ else
 
 <?php
 
-require_once('donnees.php');
+require_once('account.php');
 
 // Ajouter le compte
 if (!empty($_POST) && isset($_POST["ajouter_compte"]))
 {
     if (isset($_POST["region"]) && isset($_POST["identifiant"]) && isset($_POST["mot_de_passe"]))
     {
-        ajouter_compte($_POST["region"], $_POST["identifiant"], $_POST["mot_de_passe"]);
+        $user = $_POST["identifiant"];
+        $password = $_POST["mot_de_passe"];
+        $region = $_POST["region"];
+
+        if (is_priviledged() == false)
+        {
+            die("Echec de l'ajout du compte : vous n'avez pas les droits requis");
+        }
+
+        verifier("identifiant", $user);
+        verifier("mot_de_passe", $password);
+        verifier("region_compte", $region);
+
+        account_add($user, $password, $region);
     }
 }
 
 // Supprimer le compte
-if (!empty($_POST) && isset($_POST["supprimer_compte"]))
+if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identifiant"]))
 {
-    if (isset($_POST["region"]) && isset($_POST["identifiant"]) && isset($_POST["mot_de_passe"]))
+    if (is_priviledged() == false)
     {
-        supprimer_compte($_POST["region"], $_POST["identifiant"], $_POST["mot_de_passe"]);
+        die("Echec de la suppression du compte : vous n'avez pas les droits");
     }
+
+    account_del($user);
 }
 
 // Afficher la barre de navigation

@@ -1,6 +1,6 @@
 <?php
 
-require_once("confidentiel.php");
+require_once("member.php");
 
 // tableau de toutes les colonnes
 $colonnes = array(
@@ -55,85 +55,43 @@ $colonnes = array(
     "c8",
     "c9",
 );
-//var_dump($colonnes);
 
-//===== GESTION BASE DE DONNEES =====//
-
-// connexion à la base de données
-// gestion de l'utf8
-function connexion()
+// Tell if the session is connected
+function is_connected()
 {
-    global $cfdtl_host;
-    global $cfdtl_user;
-    global $cfdtl_pswd;
-    global $cfdtl_base;
-
-    $mysqli = new mysqli($cfdtl_host, $cfdtl_user, $cfdtl_pswd, $cfdtl_base);
-
-    if ($mysqli->connect_errno)
+    if (empty($_SESSION) == true)
     {
-        die("Echec lors de la connexion à MySQL : ($mysqli->connect_errno) $mysqli->connect_error");
+        return false;
     }
 
-    if (!$mysqli->set_charset("utf8"))
+    if (array_key_exists("identifiant", $_SESSION) == false)
     {
-        die("Incapable de charger l'UTF-8");
+        return false;
     }
 
-    return $mysqli;
+    if (array_key_exists("region", $_SESSION) == false)
+    {
+        return false;
+    }
+
+    if (array_key_exists("priviledged", $_SESSION) == false)
+    {
+        return false;
+    }
+
+    return true;
 }
 
-// deconnecte de la base de données
-function deconnexion($mysqli)
+// Tell if the session has root priviledges
+function is_priviledged()
 {
-    $mysqli->close();
+    if (is_connected() == false)
+    {
+        return false;
+    }
+
+    return $_SESSION["priviledged"];
 }
-
-// exécute la requête SQL $requete
-// lorsque la requête renvoie un jeu de données (e.g. SELECT, SHOW...)
-// appeler "$res->close();" pour libérer le résultat
-function executer_requete($requete)
-{
-    $bdd = connexion();
-    $res = $bdd->query($requete);
-    if (!$res)
-    {
-        die("Erreur : executer_requete : échec de la requête SQL<br />");
-    }
-    deconnexion($bdd);
-    return $res;
-}
-
-//===================================//
-
-// vérifie que la session existe
-function est_connecte()
-{
-    if (!empty($_SESSION) && isset($_SESSION["region"]))
-    {
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
-}
-
-// vérifie que la session a les droits nationaux
-// à appeler avant chaque opération de suppression
-function est_national()
-{
-    if (!empty($_SESSION) && isset($_SESSION["region"]) && $_SESSION["region"] == "National")
-    {
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
-}
-
-//===== GESTION INTEGRITE DE DONNEES =====//
 
 // tableau qui permet les vérifications
 //   - contient une expression régulière
@@ -428,60 +386,15 @@ function verifier($colonne, $valeur)
     }
 }
 
-// FIN GESTION INTEGRITE DE DONNEES
-//========================================//
-
-//===== GESTION DES ADHERENTS =====//
-
-// renvoie le dernier numéro d'adhérent
-function dernier_numero_adherent()
-{
-    $bdd = connexion();
-
-    $requete = "SELECT numero_adherent FROM adherents ORDER BY numero_adherent DESC LIMIT 1";
-    $res = $bdd->query($requete);
-    if (!$res)
-    {
-        die("Erreur : dernier_numero_adherent : échec de la requête SQL<br />");
-    }
-    $first = $res->fetch_row();
-    $numero_adherent = $first[0];
-
-    $res->close();
-    deconnexion($bdd);
-
-    return $numero_adherent;
-}
-
-// envoie un booléen en fonction de l'existence du numéro d'adhérent
-function adherent_existe($num_ad)
-{
-    $requete = "SELECT numero_adherent FROM adherents WHERE numero_adherent='$num_ad'";
-    $res = executer_requete($requete);
-    $row = $res->fetch_array(MYSQLI_ASSOC);
-    if (!isset($row['numero_adherent']) || !($row['numero_adherent'] == $num_ad))
-    {
-        return FALSE;
-    }
-    else
-    {
-        return TRUE;
-    }
-}
-
 // renvoie le numéro de l'adhérent créé en cas de succès
-function creer_adherent($nom, $prenom)
+function creer_adherent($lastname, $firstname)
 {
-    verifier("nom", $nom);
-    verifier("prenom", $prenom);
+    verifier("prenom", $firstname);
+    verifier("nom", $lastname);
 
-    $numero_adherent = dernier_numero_adherent();
-
-    // en PHP l'incrémentation d'un alphanumérique marche bien
-    $numero_adherent++;
-
-    $requete = "INSERT INTO adherents(numero_adherent, nom, prenom) VALUES ('$numero_adherent', '$nom', '$prenom')";
-    executer_requete($requete);
+    $numero_adherent = member_add();
+    member_update($numero_adherent, "prenom", $firstname);
+    member_update($numero_adherent, "nom", $lastname);
 
     return $numero_adherent;
 }
@@ -498,101 +411,29 @@ function insere($numero_adherent, $colonne, $valeur)
     }
     verifier($colonne, $valeur);
 
-    // attention, les " sont important pour prendre en compte les ' de $valeur
-    $requete = "UPDATE adherents  SET $colonne=" . '"' . $valeur . '" ' . "WHERE numero_adherent='$numero_adherent'";
-    executer_requete($requete);
+    member_update($numero_adherent, $colonne, $valeur);
 }
-
-// liste les adhérents
-// dépend de la session sur laquelle on est connecté
-// renvoie le résultat de la requête
-function liste_adherents()
-{
-    if (empty($_SESSION) || !isset($_SESSION['region']))
-    {
-        echo "Attention : Vous n'êtes connectés à aucune session";
-        return;
-    }
-
-    $requete = "SELECT * FROM adherents";
-    if ($_SESSION['region'] != "National")
-    {
-        $requete .= " WHERE region='{$_SESSION['region']}'";
-    }
-    $requete .= " ORDER BY numero_adherent DESC";
-
-    $res = executer_requete($requete);
-
-    return $res;
-}
-
-// informations spécifiques à 1 adhérent
-function adherent($numero_adherent)
-{
-    $requete = "SELECT * FROM adherents WHERE numero_adherent='$numero_adherent'";
-    $res = executer_requete($requete);
-    return $res;
-}
-
-// récupère les informations d'un adhérent au format tableau
-function adherent_tableau($numero_adherent)
-{
-    global $colonnes;
-    $res = adherent($numero_adherent);
-    $tableau = array();
-    $row = $res->fetch_array(MYSQLI_ASSOC);
-    foreach($colonnes as $colonne)
-    {
-        if (isset($row[$colonne]))
-        {
-            $tableau[$colonne] = $row[$colonne];
-        }
-    }
-    $res->close();
-    return $tableau;
-}
-
-// supprime l'adhérent en fonction du numéro d'adhérent
-// DANGEREUX !!!
-function supprimer_adherent($numero_adherent)
-{
-    if (est_national())
-    {
-        $requete = "DELETE FROM adherents WHERE numero_adherent = '$numero_adherent'";
-        executer_requete($requete);
-    }
-}
-
-// supprime une colonne spécifique pour le numéro d'adhérent donné
-// DANGEREUX !!!
-function supprimer($numero_adherent, $colonne)
-{
-    $requete = "UPDATE adherents SET $colonne=NULL WHERE numero_adherent = '$numero_adherent'";
-    executer_requete($requete);
-}
-
-// FIN GESTION DES ADHERENTS
-//=================================//
-
-//===== GESTION NATIONALE =====//
 
 // vide l'intégralité de la colonne $col
 // DANGEREUX !!!
 function supprimer_colonne($col)
 {
-    if (est_national())
-    {
-        global $colonnes;
-        if (!in_array($col, $colonnes))
-        {
-            return;
-        }
-        $requete = "UPDATE adherents SET $col=NULL";
-        executer_requete($requete);
-    }
-    else
+    global $colonnes;
+
+    if (is_priviledged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
+    }
+
+    if (in_array($col, $colonnes) == false)
+    {
+        return;
+    }
+
+    $id_list = member_get_list();
+    foreach($id_list as $id)
+    {
+        member_del_entry($id, $col);
     }
 }
 
@@ -600,32 +441,31 @@ function supprimer_colonne($col)
 // DANGEREUX !!!
 function copier_colonne($col1, $col2)
 {
-    if (est_national())
-    {
-        global $colonnes;
-        if (!in_array($col1, $colonnes) || !in_array($col2, $colonnes))
-        {
-            return;
-        }
-        $requete1 = "SELECT numero_adherent, $col1 FROM adherents";
-        $res1 = executer_requete($requete1);
-        while($row = $res1->fetch_array(MYSQLI_ASSOC))
-        {
-            if (isset($row["$col1"]))
-            {
-                $requete2 = "UPDATE adherents SET $col2={$row[$col1]} WHERE numero_adherent='{$row['numero_adherent']}'";
-            }
-            else
-            {
-                $requete2 = "UPDATE adherents SET $col2=NULL WHERE numero_adherent='{$row['numero_adherent']}'";
-            }
-            executer_requete($requete2);
-        }
-        $res1->close();
-    }
-    else
+    global $colonnes;
+
+    if (is_priviledged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
+    }
+
+    if ((in_array($col1, $colonnes) == false) || (in_array($col2, $colonnes) == false))
+    {
+        return;
+    }
+
+    $id_list = member_get_list();
+    foreach ($id_list as $id)
+    {
+        $member = member_get($id);
+
+        if (array_key_exists($col1, $member) == true)
+        {
+            member_update($id, $col2, $member[$col1]);
+        }
+        else
+        {
+            member_del_entry($id, $col2);
+        }
     }
 }
 
@@ -636,175 +476,11 @@ function copier_colonne($col1, $col2)
 //     - suppression de la colonne "cotis_payee"
 function basculer_cotisations()
 {
-    if (est_national())
-    {
-        copier_colonne("cotis_payee", "adhesion");
-        supprimer_colonne("cotis_payee");
-    }
-    else
+    if (is_priviledged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
     }
+
+    copier_colonne("cotis_payee", "adhesion");
+    supprimer_colonne("cotis_payee");
 }
-
-// Vérifier si le compte existe
-// Renvoyer vrai si le compte existe, faux sinon
-function compte_existe($region, $identifiant, $mot_de_passe)
-{
-    global $cfdtl_comptes;
-    if (isset($cfdtl_comptes[$region][$identifiant]))
-    {
-        if ($mot_de_passe == $cfdtl_comptes[$region][$identifiant])
-        {
-            return True;
-        }
-        else
-        {
-            return False;
-        }
-    }
-}
-
-// Lister les comptes
-// Ne pas vérifier les droits car on en a besoin à l'index de connexion
-function liste_comptes()
-{
-    $requete = "SELECT * FROM comptes";
-    $res = executer_requete($requete);
-    return $res;
-}
-
-// Ajouter un compte
-function ajouter_compte($region, $identifiant, $mot_de_passe)
-{
-    // Vérifier qu'on dispose des droits nationaux
-    if (est_national() == FALSE)
-    {
-        die("Erreur : ajouter_compte : votre compte n'a pas le droit<br />");
-    }
-
-    // Vérifier l'intégrité des entrées
-    verifier("region_compte", $region);
-    verifier("identifiant", $identifiant);
-    verifier("mot_de_passe", $mot_de_passe);
-
-    // S'arrêter si le compte existe
-    if (compte_existe($region, $identifiant, $mot_de_passe) == TRUE)
-    {
-        die("Erreur : ajouter_compte : le compte existe déjà<br />");
-    }
-
-    // Ajouter le compte dans la base de données
-    $requete = "INSERT INTO comptes(region, identifiant, mot_de_passe) VALUES ('$region', '$identifiant', '$mot_de_passe')";
-    executer_requete($requete);
-}
-
-// Supprimer un compte
-function supprimer_compte($region, $identifiant, $mot_de_passe)
-{
-    // Vérifier qu'on dispose des droits nationaux
-    if (est_national() == FALSE)
-    {
-        die("Erreur : supprimer_compte : votre compte n'a pas le droit<br />");
-    }
-
-    // Vérifier les entrées
-    verifier("region_compte", $region);
-    verifier("identifiant", $identifiant);
-    verifier("mot_de_passe", $mot_de_passe);
-
-    // S'arrêter si le compte n'existe pas
-    if (compte_existe($region, $identifiant, $mot_de_passe) == FALSE)
-    {
-        die("Erreur : supprimer_compte : le compte n'existe pas<br />");
-    }
-
-    // Supprimer le compte de la base de données
-    $requete = "DELETE FROM comptes WHERE (region='$region' AND identifiant='$identifiant' AND mot_de_passe='$mot_de_passe')";
-    executer_requete($requete);
-}
-
-// FIN GESTION NATIONALE
-//=============================//
-
-//===== FONCTIONS UTILES AU DEVELOPPEMENT =====//
-
-//XXX: uniquement utile pour le développement
-// affiche les 2 derniers adhérents triés par leur numéro
-function afficher_base()
-{
-    global $colonnes;
-    $bdd = connexion();
-    $requete = "SELECT * FROM adherents ORDER BY numero_adherent DESC LIMIT 2";
-    echo "Contenu de la table des adhérents :<br />";
-    $res = $bdd->query($requete);
-    if (!$res)
-    {
-        die("Erreur : afficher_base : échec de la requête SQL<br />");
-    }
-    while($row = $res->fetch_array(MYSQLI_ASSOC))
-    {
-        foreach($colonnes as $colonne)
-        {
-            if (isset($row[$colonne]))
-            {
-                echo "$colonne : {$row[$colonne]}<br />";
-            }
-        }
-        echo '<br />';
-    }
-    $res->close();
-    deconnexion($bdd);
-}
-
-//XXX [dev]: remplace les entrées 'vide' puis 'autre' par NULL
-//XXX: mysql non sensible à la casse par défaut
-function remplacer_vide()
-{
-    $bdd = connexion();
-    global $colonnes;
-    foreach($colonnes as $colonne)
-    {
-        $requete = "UPDATE adherents SET $colonne=NULL WHERE $colonne='autre'";
-        if (!$bdd->query($requete))
-        {
-            die("Erreur : échec de la requête SQL");
-        }
-    }
-    deconnexion($bdd);
-}
-
-/* requete utilisée pour créer la table des adherents
-$requete = 'CREATE TABLE adherents (';
-foreach($colonnes as $colonne)
-{
-    if ($colonnes[0] == $colonne)
-    {
-        $requete .= $colonne;
-    }
-    else
-    {
-        $requete .= ", $colonne";
-    }
-    $requete .= " VARCHAR(256)";
-}
-$requete .= ')';
-//echo $requete;
-$reponse = $bdd->query($requete);
-
-while ($donnees = $reponse->fetch())
-{
-    var_dump($donnees);
-}
-*/
-
-/* fonction utilisée pour créer la table des comptes
-function creer_table_comptes()
-{
-    $requete = 'CREATE TABLE comptes (region VARCHAR(32), identifiant VARCHAR(32), mot_de_passe VARCHAR(32))';
-    executer_requete($requete);
-}
-*/
-
-// FIN FONCTION UTILES AU DEVELOPPEMENT
-//=============================================//

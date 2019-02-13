@@ -2,22 +2,13 @@
 
 session_start();
 
-// affichage des erreurs
 error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
 
-// vérification de la session
-// cas particulier ici : seul les comptes nationaux sont autorisés !
-if (!empty($_SESSION))
-{
-    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']) || $_SESSION['region'] != "National")
-    {
-        header('Location: index.php');
-        exit();
-    }
-}
-else
+require_once("donnees.php");
+
+if (is_priviledged() == false)
 {
     header('Location: index.php');
     exit();
@@ -27,24 +18,25 @@ else
 
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Fonctions Nationales</title>
-</head>
-<body>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Fonctions Nationales</title>
+    </head>
+    <body>
 
 <?php
 
-// afficher la barre de navigation
+require_once("donnees.php");
 require_once('vue.php');
-afficher_navigation();
+
 afficher_filtre("national.php");
+
+afficher_navigation();
 
 // basculement des cotisations de l'année courante vers la colonne d'archive
 if (!empty($_POST) && isset($_POST["transition"]))
 {
-    require_once("donnees.php");
     basculer_cotisations();
 
     $message = "";
@@ -61,7 +53,7 @@ if (!empty($_POST) && isset($_POST["supprimer"]))
 {
     if (isset($_POST["numero_adherent"]))
     {
-        supprimer_adherent($_POST["numero_adherent"]);
+        member_del($_POST["numero_adherent"]);
     }
 }
 
@@ -88,5 +80,5 @@ afficher_liste_adherents("national.php", "supprimer");
 
 ?>
 
-</body>
+    </body>
 </html>

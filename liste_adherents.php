@@ -1,16 +1,14 @@
 <?php
 
-// vérification de la session
 session_start();
-if (!empty($_SESSION))
-{
-    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']))
-    {
-        header('Location: index.php');
-        exit();
-    }
-}
-else
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
+
+require_once("donnees.php");
+
+if (is_connected() == false)
 {
     header('Location: index.php');
     exit();
@@ -20,17 +18,18 @@ else
 
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Liste des adhérents</title>
-</head>
-<body>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Liste des adhérents</title>
+    </head>
+    <body>
 
 <?php
 
-// afficher le filtre et la barre de navigation
+require_once("member.php");
 require_once('vue.php');
+
 afficher_navigation();
 afficher_filtre("liste_adherents.php");
 
@@ -66,8 +65,11 @@ if (!empty($_POST) && isset($_POST['ajouter']))
 
         // on notifie par mail la création
         require_once("mail.php");
-        $message = "<p>Message provenant de 'liste_adherents.php' :</p>" .
-        "<p>Création d'un adhérent suite à la saisie du formulaire d'ajout</p>";
+
+        $message = "";
+        $message .= "<p>Message provenant de 'liste_adherents.php' :</p>";
+        $message .= "<p>Création d'un adhérent suite à la saisie du formulaire d'ajout</p>";
+
         mail_creer_adherent($numero_adherent, $message);
     }
 }
@@ -75,8 +77,9 @@ elseif(!empty($_POST) && isset($_POST['modifier']) && isset($_POST['numero_adher
 {
     // update de toutes les données envoyées par POST
     $numero_adherent = $_POST['numero_adherent'];
-    $adherent_legacy = adherent_tableau($numero_adherent);
+    $adherent_legacy = member_get($numero_adherent);
     $mail_modifications = array();
+
     foreach($colonnes as $colonne)
     {
         if (isset($_POST[$colonne]) && !empty($_POST[$colonne]))
@@ -87,10 +90,12 @@ elseif(!empty($_POST) && isset($_POST['modifier']) && isset($_POST['numero_adher
         }
     }
 
-    // notification par mail des modifications réalisées
     require_once("mail.php");
-    $message = "<p>Message provenant de 'liste_adherents.php' :</p>" .
-    "<p>Modification d'un adhérent suite à la saisie du formulaire</p>";
+
+    $message = "";
+    $message .= "<p>Message provenant de 'liste_adherents.php' :</p>";
+    $message .= "<p>Modification d'un adhérent suite à la saisie du formulaire</p>";
+
     mail_modifier_adherent($mail_modifications, $message, $adherent_legacy);
 }
 
@@ -101,6 +106,5 @@ afficher_liste_adherents("ajouter_adherent.php", "afficher");
 
 ?>
 
-
-</body>
+    </body>
 </html>

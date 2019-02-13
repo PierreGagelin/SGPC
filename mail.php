@@ -169,7 +169,7 @@ function test_mail()
 //    @adherent_legacy : état de l'adhérent avant suppression
 function mail_supprimer_colonne($numero_adherent, $colonne, $message, $adherent_legacy)
 {
-    if (!est_connecte())
+    if (!is_connected())
     {
         return;
     }
@@ -207,7 +207,7 @@ function mail_supprimer_colonne($numero_adherent, $colonne, $message, $adherent_
 
 function mail_creer_adherent($numero_adherent, $message)
 {
-    if (!est_connecte())
+    if (!is_connected())
     {
         return;
     }
@@ -243,7 +243,7 @@ function mail_creer_adherent($numero_adherent, $message)
 
 function mail_modifier_adherent($modifications, $message, $adherent_legacy)
 {
-    if (!est_connecte() || !isset($modifications["numero_adherent"]))
+    if (!is_connected() || !isset($modifications["numero_adherent"]))
     {
         return;
     }

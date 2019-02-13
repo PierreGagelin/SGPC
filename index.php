@@ -1,66 +1,59 @@
 <?php
 
-// routine de déconnexion
-if (!empty($_POST))
-{
-    if (isset($_POST['deconnexion']))
-    {
-        session_start();
-        $_SESSION = array();
-    }
-}
-
 session_start();
-if (!empty($_SESSION))
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
+
+require_once("account.php");
+require_once("donnees.php");
+
+// Handle disconnection
+if (!empty($_POST) && isset($_POST['deconnexion']))
 {
-    if (isset($_SESSION['identifiant']) && isset($_SESSION['region']))
-    {
-        header('Location: liste_adherents.php');
-        exit();
-    }
+    $_SESSION = array();
 }
 
-require_once("confidentiel.php");
-// récupération des comptes confidentiels
-$comptes = $cfdtl_comptes;
-
-// vérifie le mot de passe
-// inscrit les données de sessions en cas de succès
-function authentification($identifiant, $mot_de_passe)
+if (is_connected() == true)
 {
-    global $comptes;
-    foreach(array_keys($comptes) as $region)
+    header('Location: liste_adherents.php');
+    exit();
+}
+
+//
+// Authenticate the user's session
+//
+function authentification($user, $password)
+{
+    global $ACCOUNT_ARRAY;
+
+    if (account_password_exist($user, $password) == false)
     {
-        if (isset($comptes[$region][$identifiant]))
-        {
-            if ($mot_de_passe == $comptes[$region][$identifiant])
-            {
-                $_SESSION['identifiant'] = $identifiant;
-                $_SESSION['region'] = $region;
-                header('Location: liste_adherents.php');
-                exit();
-            }
-            else
-            {
-                echo "Mot de passe erroné !<br />";
-                return;
-            }
-        }
+        echo "Echec de l'authentification : utilisateur inconnu [identifiant=$user]<br />";
+        return;
     }
-    echo "Identifiant erroné !<br />";
+
+    $_SESSION["identifiant"] = $user;
+    $_SESSION["region"] = $ACCOUNT_ARRAY[$user]["region"];
+    $_SESSION["priviledged"] = $ACCOUNT_ARRAY[$user]["priviledged"];
+
+    header('Location: liste_adherents.php');
+    exit();
 }
 
 if (!empty($_POST))
 {
     if (!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe']))
     {
-        echo "Vous avez oublié l'identifiant ou le mot de passe !";
+        echo "Vous avez oublié l'identifiant ou le mot de passe !<br />";
     }
     else
     {
-        $identifiant = $_POST['identifiant'];
-        $mot_de_passe = $_POST['mot_de_passe'];
-        authentification($identifiant, $mot_de_passe);
+        $user = $_POST['identifiant'];
+        $password = $_POST['mot_de_passe'];
+
+        authentification($user, $password);
     }
 }
 
@@ -68,22 +61,21 @@ if (!empty($_POST))
 
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Page d'accueil</title>
-</head>
-<body>
-
-<div class="fond_gris">
-<p>
-Merci de vous connecter pour pouvoir continuer :
-</p>
-<form action="index.php" method="post">
-  Identifiant : <input type="text" name="identifiant"><br />
-  Mot de passe : <input type="password" name="mot_de_passe"><br />
-<input type="submit" value="Connexion"></form>
-</div>
-
-</body>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Page d'accueil</title>
+    </head>
+    <body>
+        <div class="fond_gris">
+            <p>
+                Merci de vous connecter pour pouvoir continuer :
+            </p>
+            <form action="index.php" method="post">
+                Identifiant : <input type="text" name="identifiant"><br />
+                Mot de passe : <input type="password" name="mot_de_passe"><br />
+                <input type="submit" value="Connexion">
+            </form>
+        </div>
+    </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 
 require_once('donnees.php');
+require_once("member.php");
 
 // gestion du filtre
 // permet de ne sélectionner que certaines colonnes
@@ -49,7 +50,7 @@ function afficher_navigation()
     $nav .= '    <input type="submit" value="Ajouter un adhérent">';
     $nav .= '</form>';
 
-    if (est_national())
+    if (is_priviledged() == true)
     {
         $nav .= '<form action="import.php" method="get">';
         $nav .= '    <input type="submit" value="Import d\'un fichier Excel">';
@@ -60,7 +61,7 @@ function afficher_navigation()
     $nav .= '    <input type="submit" value="Exporter au format Excel">';
     $nav .= '</form>';
 
-    if (est_national())
+    if (is_priviledged() == true)
     {
         $nav .= '<form action="national.php" method="get">';
         $nav .= '    <input type="submit" value="Gestion nationale">';
@@ -71,10 +72,12 @@ function afficher_navigation()
         $nav .= '</form>';
     }
 
-    $nav .= '<form action="index.php" method="post">' .
+    $nav .= '<form action="index.php" method="post">';
     $nav .= '    <input type="hidden" name="deconnexion" value="useless">';
     $nav .= '    <input type="submit" value="Déconnexion">';
-    $nav .= '</form></div>';
+    $nav .= '</form>';
+
+    $nav .= '</div>';
 
     echo $nav;
 }
@@ -89,8 +92,8 @@ function afficher_filtre($page)
     }
     $vue_filtre = "";
 
-    $vue_filtre .= "<div id='filtre'>" .
-    $vue_filtre .= "<h2>Filtrage :</h2>" .
+    $vue_filtre .= "<div id='filtre'>";
+    $vue_filtre .= "<h2>Filtrage :</h2>";
     $vue_filtre .= "<form action='$page' method='post'>";
 
     global $colonnes;
@@ -139,7 +142,9 @@ function afficher_filtre($page)
     }
 
     $vue_filtre .= '<input type="hidden" name="filtre">';
-    $vue_filtre .= "<input type='submit' value='Filtrer'></form></div><br />";
+    $vue_filtre .= "<input type='submit' value='Filtrer'><br />";
+    $vue_filtre .= '</form>';
+    $vue_filtre .= '</div>';
 
     echo $vue_filtre;
 }
@@ -154,17 +159,15 @@ function afficher_liste_adherents($page, $type)
     {
         $submit .= '<input type="hidden" name ="afficher" value="inutile">';
         $submit .= '<input type="submit" value="Afficher">';
-        $submit .= '</form>';
     }
     elseif ($type == "supprimer")
     {
-        if (!est_national())
+        if (is_priviledged() == false)
         {
             return;
         }
         $submit .= '<input type="hidden" name ="supprimer" value="inutile">';
         $submit .= '<input type="submit" value="Supprimer">';
-        $submit .= '</form>';
     }
     else
     {
@@ -173,56 +176,40 @@ function afficher_liste_adherents($page, $type)
 
     global $colonnes;
 
-    $liste_adherents = "";
-    $liste_adherents .= "<div id='liste'>";
-    $liste_adherents .= "<h2>Liste des adhérents</h2>";
+    $entry = "";
+    $entry .= "<div id='liste'>";
+    $entry .= "<h2>Liste des adhérents</h2>";
 
-    $res = liste_adherents();
-    if (!isset($_SESSION['filtre']))
+    $id_list = member_get_list();
+    foreach ($id_list as $id)
     {
-        while($row = $res->fetch_array(MYSQLI_ASSOC))
-        {
-            $liste_adherents .= "<form action='$page' method='post'>";
-            foreach($colonnes as $colonne)
-            {
-                if (isset($row[$colonne]))
-                {
-                    // attention, pour prendre en charge les ' on doit faire attention
-                    $liste_adherents .= "<input type='hidden' name='$colonne' " . 'value="' . $row[$colonne] . '">';
-                    if ($colonne == "numero_adherent" || $colonne == "nom" || $colonne == "prenom")
-                    {
-                        $liste_adherents .= "$colonne : {$row[$colonne]}<br />";
-                    }
-                }
-            }
-            $liste_adherents .= $submit;
-        }
-    }
-    else
-    {
-        while($row = $res->fetch_array(MYSQLI_ASSOC))
-        {
-            $liste_adherents .= "<form action='$page' method='post'>";
-            foreach($colonnes as $colonne)
-            {
-                if (isset($row[$colonne]))
-                {
-                    // attention, pour prendre en charge les ' on doit faire attention
-                    $liste_adherents .= "<input type='hidden' name='$colonne' " . 'value="' . $row[$colonne] . '">';
-                    if ($_SESSION['filtre'][$colonne] == 'on')
-                    {
-                        $liste_adherents .= "$colonne : {$row[$colonne]}<br />";
-                    }
-                }
-            }
-            $liste_adherents .= $submit;
-        }
-    }
-    $res->close();
+        $member = member_get($id);
 
-    $liste_adherents .= '</div>';
+        $entry .= "<form action='$page' method='post'>";
+        foreach($colonnes as $colonne)
+        {
+            if (array_key_exists($colonne, $member) == false)
+            {
+                continue;
+            }
 
-    echo $liste_adherents;
+            // attention, pour prendre en charge les ' on doit faire attention
+            $entry .= "<input type='hidden' name='$colonne' " . 'value="' . $member[$colonne] . '">';
+            if (($colonne == "numero_adherent") ||
+                ($colonne == "nom") ||
+                ($colonne == "prenom") ||
+                ($_SESSION['filtre'][$colonne] == 'on'))
+            {
+                $entry .= "$colonne : {$member[$colonne]}<br />";
+            }
+        }
+        $entry .= $submit;
+        $entry .= '</form>';
+    }
+
+    $entry .= '</div>';
+
+    echo $entry;
 }
 
 // affichage HTML d'un tableau en liste non-ordonnée
@@ -240,7 +227,7 @@ function vue_tableau($tableau)
 // vue HTML d'un adhérent comme liste non-ordonnée
 function vue_adherent($numero_adherent)
 {
-    $adherent = adherent_tableau($numero_adherent);
+    $adherent = member_get($numero_adherent);
     $vue_adherent = vue_tableau($adherent);
     return $vue_adherent;
 }
@@ -248,111 +235,113 @@ function vue_adherent($numero_adherent)
 // affiche le bouton pour supprimer une colonne
 function afficher_supprimer_colonne($colonne)
 {
-    if (!est_national())
+    if (!is_priviledged())
     {
         return;
     }
-    $supprimer_colonne = "";
+    $entry = "";
 
-    $supprimer_colonne .= "<div class='section'>";
+    $entry .= "<div class='section'>";
 
-    $supprimer_colonne .= "<h2>Supprimer la colonne $colonne</h2>";
-    $supprimer_colonne .= "<p>Cliquez pour supprimer la colonne $colonne : </p>";
+    $entry .= "<h2>Supprimer la colonne $colonne</h2>";
+    $entry .= "<p>Cliquez pour supprimer la colonne $colonne : </p>";
 
-    $supprimer_colonne .= '<form method="post" action="national.php">';
-    $supprimer_colonne .= "    <input type='hidden' name='supprimer_colonne' value='$colonne'>";
-    $supprimer_colonne .= "    <input type='submit' value='Supprimer'>";
-    $supprimer_colonne .= "</form>";
+    $entry .= '<form method="post" action="national.php">';
+    $entry .= "    <input type='hidden' name='supprimer_colonne' value='$colonne'>";
+    $entry .= "    <input type='submit' value='Supprimer'>";
+    $entry .= "</form>";
 
-    $supprimer_colonne .= "</div>";
+    $entry .= "</div>";
 
-    echo $supprimer_colonne;
+    echo $entry;
 }
 
 // affiche le bouton de basculement des cotisations
 function afficher_transition_annuelle()
 {
-    if (!est_national())
+    if (!is_priviledged())
     {
         return;
     }
-    $transition = "";
+    $entry = "";
 
-    $transition .= '<div id="transition">';
-    $transition .= '<h2>Basculement des cotisations</h2>';
-    $transition .= "<p><strong>ATTENTION</strong> : cette action est à réaliser avec précaution. Elle a pour but d'effectuer la transition annuelle des comptes.</p>";
-    $transition .= "<p>Si vous cliquez sur le bouton, les données de l'année précédente seront effacées et remplacées par celles de l'année courante.</p>";
+    $entry .= '<div id="transition">';
+    $entry .= '<h2>Basculement des cotisations</h2>';
+    $entry .= "<p><strong>ATTENTION</strong> : cette action est à réaliser avec précaution. Elle a pour but d'effectuer la transition annuelle des comptes.</p>";
+    $entry .= "<p>Si vous cliquez sur le bouton, les données de l'année précédente seront effacées et remplacées par celles de l'année courante.</p>";
 
-    $transition .= '<form action="national.php" method="post">';
-    $transition .= '    <input type="hidden" name="transition" value="inutile">';
-    $transition .= '    <input type="submit" value="Effectuer la transition annuelle">';
-    $transition .= '</form>';
+    $entry .= '<form action="national.php" method="post">';
+    $entry .= '    <input type="hidden" name="transition" value="inutile">';
+    $entry .= '    <input type="submit" value="Effectuer la transition annuelle">';
+    $entry .= '</form>';
 
-    $transition .= '</div>';
+    $entry .= '</div>';
 
-    echo $transition;
+    echo $entry;
 }
 
 // Afficher la liste des comptes
 function afficher_liste_comptes()
 {
-    $res = liste_comptes();
+    $user_list = account_get_list();
 
-    $liste_comptes = "";
-    $liste_comptes .= "<div class='section'>";
-    $liste_comptes .= "<h2>Liste des comptes</h2>";
+    $entry = "";
+    $entry .= "<div class='section'>";
+    $entry .= "<h2>Liste des comptes</h2>";
 
-    while($row = $res->fetch_array(MYSQLI_ASSOC))
+    foreach($user_list as $user)
     {
-        $liste_comptes .= "region : {$row['region']}<br />";
-        $liste_comptes .= "identifiant : {$row['identifiant']}<br />";
-        $liste_comptes .= "mot de passe : {$row['mot_de_passe']}<br /><br />";
+        $account = account_get($user);
+
+        $entry .= "region : {$account['region']}<br />";
+        $entry .= "identifiant : {$account['user']}<br />";
+        $entry .= "mot de passe : {$account['password']}<br /><br />";
     }
-    $res->close();
 
-    $liste_comptes .= '</div>';
+    $entry .= '</div>';
 
-    echo $liste_comptes;
+    echo $entry;
 }
 
 function afficher_ajouter_compte()
 {
     global $vue;
 
-    $ajouter_compte = "";
+    $entry = "";
 
-    $ajouter_compte .= "<div class='section'>";
-    $ajouter_compte .= "<h2>Ajouter un compte</h2>";
-    $ajouter_compte .= "<p>Remplir le formulaire pour ajouter le compte : </p>";
-    $ajouter_compte .= '<form method="post" action="comptes.php">';
-    $ajouter_compte .= '<input type="hidden" name="ajouter_compte" value="inutile">';
-    $ajouter_compte .= $vue['region_compte'];
-    $ajouter_compte .= $vue['identifiant'];
-    $ajouter_compte .= $vue['mot_de_passe'];
-    $ajouter_compte .= "<input type='submit' value='Ajouter'>";
-    $ajouter_compte .= "</form></div>";
+    $entry .= "<div class='section'>";
+    $entry .= "<h2>Ajouter un compte</h2>";
+    $entry .= "<p>Remplir le formulaire pour ajouter le compte : </p>";
+    $entry .= '<form method="post" action="comptes.php">';
+    $entry .= '<input type="hidden" name="ajouter_compte" value="inutile">';
+    $entry .= "{$vue['region_compte']}";
+    $entry .= "{$vue['identifiant']}";
+    $entry .= "{$vue['mot_de_passe']}";
+    $entry .= "<input type='submit' value='Ajouter'>";
+    $entry .= "</form>";
+    $entry .= "</div>";
 
-    echo $ajouter_compte;
+    echo $entry;
 }
 
 function afficher_supprimer_compte()
 {
     global $vue;
 
-    $supprimer_compte = "";
+    $entry = "";
 
-    $supprimer_compte .= "<div class='section'>";
-    $supprimer_compte .= "<h2>Supprimer un compte</h2>";
-    $supprimer_compte .= "<p>Remplir le formulaire pour supprimer le compte : </p>";
-    $supprimer_compte .= '<form method="post" action="comptes.php">';
-    $supprimer_compte .= '<input type="hidden" name="supprimer_compte" value="inutile">';
-    $supprimer_compte .= $vue['region_compte'];
-    $supprimer_compte .= $vue['identifiant'];
-    $supprimer_compte .= $vue['mot_de_passe'];
-    $supprimer_compte .= "<input type='submit' value='Supprimer'>";
-    $supprimer_compte .= "</form></div>";
+    $entry .= "<div class='section'>";
+    $entry .= "<h2>Supprimer un compte</h2>";
+    $entry .= "<p>Remplir le formulaire pour supprimer le compte : </p>";
+    $entry .= '<form method="post" action="comptes.php">';
+    $entry .= '<input type="hidden" name="supprimer_compte" value="inutile">';
+    $entry .= $vue['region_compte'];
+    $entry .= $vue['identifiant'];
+    $entry .= $vue['mot_de_passe'];
+    $entry .= "</form>";
+    $entry .= "</div>";
 
-    echo $supprimer_compte;
+    echo $entry;
 }
 
 // tableau d'éléments HTML

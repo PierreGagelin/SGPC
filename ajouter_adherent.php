@@ -1,28 +1,16 @@
 <?php
 
-// vérification de la session
 session_start();
 
-/** Error reporting */
 error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
 
-// gestion des donnees
 require_once('donnees.php');
-
-// gestion de la vue
 require_once('vue.php');
+require_once("mail.php");
 
-if (!empty($_SESSION))
-{
-    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']))
-    {
-        header('Location: index.php');
-        exit();
-    }
-}
-else
+if (is_connected() == false)
 {
     header('Location: index.php');
     exit();
@@ -32,12 +20,12 @@ else
 if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_adherent']) && isset($_POST['colonne']))
 {
     $numero_adherent = $_POST['numero_adherent'];
-    $adherent_legacy = adherent_tableau($numero_adherent);
     $colonne = $_POST['colonne'];
-    supprimer($numero_adherent, $colonne);
+
+    $adherent_legacy = member_get($numero_adherent);
+    member_del_entry($numero_adherent, $colonne);
 
     // envoi d'un mail pour prévenir de la suppression
-    require_once("mail.php");
     $mail_message = "";
     $mail_message .= "<p>Message provenant de 'ajouter_adherent.php' : </p>";
     $mail_message .= "<p>Suppression d'une colonne pour un adhérent</p>";
@@ -48,25 +36,26 @@ if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_a
 
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Ajout ou modification d'adhérent</title>
-</head>
-<body>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Ajout ou modification d'adhérent</title>
+    </head>
+    <body>
 
 <?php
-// afficher le filtre et la barre de navigation
+
 afficher_navigation();
 afficher_filtre("ajouter_adherent.php");
+
 ?>
 
-<div id="page">
-<h2>Ajout ou modification d'un adhérent</h2>
-<p>
-Pour ajouter ou modifier un adhérent il suffit de remplir les informations
-dans le formulaire ci dessous :
-</p>
+        <div id="page">
+        <h2>Ajout ou modification d'un adhérent</h2>
+        <p>
+            Pour ajouter ou modifier un adhérent il suffit de remplir les informations
+            dans le formulaire ci dessous :
+        </p>
 
 <?php
 
@@ -75,7 +64,7 @@ dans le formulaire ci dessous :
 if (!empty($_POST) && isset($_POST['numero_adherent']))
 {
     $numero_adherent = $_POST['numero_adherent'];
-    $adherent = adherent_tableau($numero_adherent);
+    $adherent = member_get($numero_adherent);
 }
 
 // formulaire d'informations
@@ -86,7 +75,7 @@ $formulaire = '<form action="liste_adherents.php" method="post">';
 //   - sinon on ajoute aussi le numéro d'adhérent pour les modifications
 if (!empty($_POST) && isset($_POST['afficher']))
 {
-    $formulaire .= "<input type='hidden' name='numero_adherent' value='{$_POST['numero_adherent']}'>";
+    $formulaire .= "<input type='hidden' name='numero_adherent' value='$numero_adherent'>";
     $formulaire .= '<input type="hidden" name="modifier">';
     $type = "Modifier";
 }
@@ -171,5 +160,5 @@ if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
 
 ?>
 
-</body>
+    </body>
 </html>

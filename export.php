@@ -1,16 +1,14 @@
 <?php
 
-// vérification de la session
 session_start();
-if (!empty($_SESSION))
-{
-    if (!isset($_SESSION['identifiant']) || !isset($_SESSION['region']))
-    {
-        header('Location: index.php');
-        exit();
-    }
-}
-else
+
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+ini_set('display_startup_errors', true);
+
+require_once("donnees.php");
+
+if (is_connected() == false)
 {
     header('Location: index.php');
     exit();
@@ -20,26 +18,20 @@ else
 
 <!DOCTYPE html>
 <html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Exporter Excel</title>
-</head>
-<body>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="style.css" />
+        <title>Exporter Excel</title>
+    </head>
+    <body>
 
 <?php
 
-// affichage des erreurs
-error_reporting(E_ALL);
-ini_set('display_errors', TRUE);
-ini_set('display_startup_errors', TRUE);
-
-// afficher la barre de navigation
 require_once('vue.php');
+require_once('Classes/PHPExcel.php');
+
 afficher_navigation();
 
-// librairie pour utiliser Excel
-require_once('Classes/PHPExcel.php');
 
 // Create new PHPExcel object
 $objPHPExcel = new PHPExcel();
@@ -47,10 +39,6 @@ $objPHPExcel = new PHPExcel();
 // feuille Excel de travail
 $feuille = $objPHPExcel->setActiveSheetIndex(0);
 $feuille->setTitle('Feuille 1');
-
-// on récupère la liste des adhérents
-require_once("donnees.php");
-$adherents = liste_adherents();
 
 // on entre les noms de colonne sur la première ligne
 $xls_col = 'A';
@@ -60,23 +48,25 @@ foreach($colonnes as $colonne)
     $feuille->setCellValue($xls_col . $xls_lig, $colonne);
     $xls_col++;
 }
+$xls_lig++;
 
 // on rempli les données ligne par ligne
-$xls_lig++;
-while($row = $adherents->fetch_array(MYSQLI_ASSOC))
+$id_list = member_get_list();
+foreach($id_list as $id)
 {
+    $member = member_get($id);
+
     $xls_col = 'A';
     foreach($colonnes as $colonne)
     {
-        if (isset($row[$colonne]))
+        if (isset($member[$colonne]) == true)
         {
-            $feuille->setCellValue($xls_col . $xls_lig, $row[$colonne]);
+            $feuille->setCellValue($xls_col . $xls_lig, $member[$colonne]);
         }
         $xls_col++;
     }
     $xls_lig++;
 }
-$adherents->close();
 
 // sauvegarder au format .xls (Excel 95)
 //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
@@ -92,6 +82,5 @@ echo $lien_telecharger;
 
 ?>
 
-
-</body>
+    </body>
 </html>
