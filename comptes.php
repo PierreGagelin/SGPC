@@ -54,6 +54,8 @@ if (!empty($_POST) && isset($_POST["ajouter_compte"]))
 // Supprimer le compte
 if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identifiant"]))
 {
+    $user = $_POST["identifiant"];
+
     if (is_priviledged() == false)
     {
         die("Echec de la suppression du compte : vous n'avez pas les droits");

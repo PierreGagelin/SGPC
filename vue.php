@@ -310,6 +310,7 @@ function afficher_supprimer_compte()
     $entry .= $vue['region_compte'];
     $entry .= $vue['identifiant'];
     $entry .= $vue['mot_de_passe'];
+    $entry .= "<input type='submit' value='Supprimer'>";
     $entry .= "</form>";
     $entry .= "</div>";
 
