@@ -1,25 +1,8 @@
 <?php
 
+require_once('sgpc_session.php');
 require_once('donnees.php');
 require_once("member.php");
-
-// gestion du filtre
-// permet de ne sélectionner que certaines colonnes
-if (!empty($_POST) && isset($_POST['filtre']))
-{
-    $_SESSION['filtre'] = array();
-    foreach($colonnes as $colonne)
-    {
-        if (isset($_POST["filtre_$colonne"]))
-        {
-            $_SESSION['filtre'][$colonne] = 'on';
-        }
-        else
-        {
-            $_SESSION['filtre'][$colonne] = 'off';
-        }
-    }
-}
 
 // affiche une invitation à importer un fichier Excel
 function afficher_import_excel()
@@ -112,32 +95,15 @@ function afficher_filtre($page)
         }
     }
 
-    if (empty($_SESSION) || !isset($_SESSION['filtre']))
+    foreach($colonnes as $colonne)
     {
-        foreach($colonnes as $colonne)
+        if ($_SESSION['filtre'][$colonne] == 'on')
         {
-            if ($colonne == "numero_adherent" || $colonne == "nom" || $colonne == "prenom")
-            {
-                $vue_filtre .= "<input type='checkbox' name='filtre_$colonne' checked>$colonne<br />";
-            }
-            else
-            {
-                $vue_filtre .= "<input type='checkbox' name='filtre_$colonne'> $colonne<br />";
-            }
+            $vue_filtre .= "<input type='checkbox' name='filtre_$colonne' checked>$colonne<br />";
         }
-    }
-    elseif (isset($_SESSION['filtre']))
-    {
-        foreach($colonnes as $colonne)
+        else
         {
-            if (isset($_SESSION['filtre']) && $_SESSION['filtre'][$colonne] == 'on')
-            {
-                $vue_filtre .= "<input type='checkbox' name='filtre_$colonne' checked>$colonne<br />";
-            }
-            else
-            {
-                $vue_filtre .= "<input type='checkbox' name='filtre_$colonne'>$colonne<br />";
-            }
+            $vue_filtre .= "<input type='checkbox' name='filtre_$colonne'>$colonne<br />";
         }
     }
 
@@ -184,6 +150,12 @@ function afficher_liste_adherents($page, $type)
     foreach ($id_list as $id)
     {
         $member = member_get($id);
+
+        // Skip member that don't belong to the region
+        if (($member['region'] != $_SESSION['region']) && (is_priviledged() == false))
+        {
+            continue;
+        }
 
         $entry .= "<form action='$page' method='post'>";
         foreach($colonnes as $colonne)

@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
+require_once('sgpc_session.php');
 require_once("account.php");
 require_once("donnees.php");
 
@@ -42,7 +43,7 @@ function authentification($user, $password)
     exit();
 }
 
-if (!empty($_POST))
+if ((empty($_POST) == false) && (array_key_exists('connexion', $_POST) == true))
 {
     if (!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe']))
     {
@@ -74,6 +75,7 @@ if (!empty($_POST))
             <form action="index.php" method="post">
                 Identifiant : <input type="text" name="identifiant"><br />
                 Mot de passe : <input type="password" name="mot_de_passe"><br />
+                <input type="hidden" name="connexion" value="useless">
                 <input type="submit" value="Connexion">
             </form>
         </div>

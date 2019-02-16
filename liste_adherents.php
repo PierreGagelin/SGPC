@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
+require_once('sgpc_session.php');
 require_once("donnees.php");
 
 if (is_connected() == false)

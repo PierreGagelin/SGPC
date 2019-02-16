@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
+require_once('sgpc_session.php');
 require_once('donnees.php');
 require_once('vue.php');
 require_once("mail.php");
@@ -23,7 +24,7 @@ if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_a
     $colonne = $_POST['colonne'];
 
     $adherent_legacy = member_get($numero_adherent);
-    member_del_entry($numero_adherent, $colonne);
+    member_attr_del($numero_adherent, $colonne);
 
     // envoi d'un mail pour prévenir de la suppression
     $mail_message = "";
@@ -144,12 +145,13 @@ if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
         {
             $formulaire = "";
             $formulaire .= "<form action='ajouter_adherent.php' method='post'>";
-            $formulaire .= $input_afficher;
+            $formulaire .= "<input type='submit' value='Supprimer'>";
+            $formulaire .= "$input_afficher";
             $formulaire .= "<input type='hidden' name='supprimer_ligne'>";
             $formulaire .= "<input type='hidden' name='numero_adherent' value='$numero_adherent'>";
             $formulaire .= "<input type='hidden' name='colonne' value='$colonne'>";
             $formulaire .= "$colonne : {$adherent[$colonne]}";
-            $formulaire .= "<input type='submit' value='Supprimer'></form>";
+            $formulaire .= "</form>";
 
             $section_supprimer .= $formulaire;
         }

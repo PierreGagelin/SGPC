@@ -4,7 +4,7 @@ require_once("member.php");
 
 // tableau de toutes les colonnes
 $colonnes = array(
-    "numero_adherent",
+    'numero_adherent',
     "nom",
     "prenom",
     "cotis_payee",
@@ -433,7 +433,7 @@ function supprimer_colonne($col)
     $id_list = member_get_list();
     foreach($id_list as $id)
     {
-        member_del_entry($id, $col);
+        member_attr_del($id, $col);
     }
 }
 
@@ -464,7 +464,7 @@ function copier_colonne($col1, $col2)
         }
         else
         {
-            member_del_entry($id, $col2);
+            member_attr_del($id, $col2);
         }
     }
 }

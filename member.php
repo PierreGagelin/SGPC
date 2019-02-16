@@ -118,7 +118,7 @@ function member_del($id)
     member_store();
 }
 
-function member_del_entry($id, $column)
+function member_attr_del($id, $column)
 {
     global $MEMBER_ARRAY;
 
