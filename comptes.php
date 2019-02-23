@@ -6,7 +6,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
+require_once('account.php');
 require_once('donnees.php');
+require_once('vue.php');
 
 if (is_priviledged() == false)
 {
@@ -14,20 +16,7 @@ if (is_priviledged() == false)
     exit();
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" href="style.css" />
-  <title>Gestion des comptes</title>
-</head>
-<body>
-
-<?php
-
-require_once('account.php');
+afficher_header("Gestion des comptes");
 
 // Ajouter le compte
 if (!empty($_POST) && isset($_POST["ajouter_compte"]))
@@ -65,7 +54,6 @@ if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identif
 }
 
 // Afficher la barre de navigation
-require_once('vue.php');
 afficher_navigation();
 afficher_filtre("national.php");
 
@@ -74,7 +62,6 @@ afficher_liste_comptes();
 afficher_ajouter_compte();
 afficher_supprimer_compte();
 
-?>
+afficher_footer();
 
-</body>
-</html>
+?>

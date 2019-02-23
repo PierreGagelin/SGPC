@@ -6,9 +6,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
-require_once('sgpc_session.php');
+require_once("sgpc_session.php");
 require_once("account.php");
 require_once("donnees.php");
+require_once("vue.php");
 
 // Handle disconnection
 if (!empty($_POST) && isset($_POST['deconnexion']))
@@ -58,26 +59,24 @@ if ((empty($_POST) == false) && (array_key_exists('connexion', $_POST) == true))
     }
 }
 
+afficher_header("Page d'accueil");
+
 ?>
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Page d'accueil</title>
-    </head>
-    <body>
-        <div class="fond_gris">
-            <p>
-                Merci de vous connecter pour pouvoir continuer :
-            </p>
-            <form action="index.php" method="post">
-                Identifiant : <input type="text" name="identifiant"><br />
-                Mot de passe : <input type="password" name="mot_de_passe"><br />
-                <input type="hidden" name="connexion" value="useless">
-                <input type="submit" value="Connexion">
-            </form>
-        </div>
-    </body>
-</html>
+<div class="fond_gris">
+    <p>
+        Merci de vous connecter pour pouvoir continuer :
+    </p>
+    <form action="index.php" method="post">
+        Identifiant : <input type="text" name="identifiant"><br />
+        Mot de passe : <input type="password" name="mot_de_passe"><br />
+        <input type="hidden" name="connexion" value="useless">
+        <input type="submit" value="Connexion">
+    </form>
+</div>
+
+<?php
+
+afficher_footer();
+
+?>

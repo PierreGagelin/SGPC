@@ -7,6 +7,8 @@ ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
 require_once("donnees.php");
+require_once('vue.php');
+require_once('Classes/PHPExcel.php');
 
 if (is_connected() == false)
 {
@@ -14,22 +16,7 @@ if (is_connected() == false)
     exit();
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Exporter Excel</title>
-    </head>
-    <body>
-
-<?php
-
-require_once('vue.php');
-require_once('Classes/PHPExcel.php');
-
+afficher_header("Exporter Excel");
 afficher_navigation();
 
 
@@ -80,7 +67,6 @@ $lien_telecharger .= "    <input type='submit' value='Téléchargez le fichier'>
 $lien_telecharger .= "</form>";
 echo $lien_telecharger;
 
-?>
+afficher_footer();
 
-    </body>
-</html>
+?>

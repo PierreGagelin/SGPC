@@ -7,6 +7,7 @@ ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
 require_once("donnees.php");
+require_once('vue.php');
 
 if (is_priviledged() == false)
 {
@@ -14,25 +15,9 @@ if (is_priviledged() == false)
     exit();
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Fonctions Nationales</title>
-    </head>
-    <body>
-
-<?php
-
-require_once("donnees.php");
-require_once('vue.php');
-
-afficher_filtre("national.php");
-
+afficher_header("Fonctions Nationales");
 afficher_navigation();
+afficher_filtre("national.php");
 
 // basculement des cotisations de l'année courante vers la colonne d'archive
 if (!empty($_POST) && isset($_POST["transition"]))
@@ -78,7 +63,6 @@ afficher_supprimer_colonne("c9");
 
 afficher_liste_adherents("national.php", "supprimer");
 
-?>
+afficher_footer();
 
-    </body>
-</html>
+?>

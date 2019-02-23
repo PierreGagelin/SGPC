@@ -33,30 +33,18 @@ if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_a
     mail_supprimer_colonne($numero_adherent, $colonne, $mail_message, $adherent_legacy);
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Ajout ou modification d'adhérent</title>
-    </head>
-    <body>
-
-<?php
-
+afficher_header("Ajout ou modification d'adhérent");
 afficher_navigation();
 afficher_filtre("ajouter_adherent.php");
 
 ?>
 
-        <div id="page">
-        <h2>Ajout ou modification d'un adhérent</h2>
-        <p>
-            Pour ajouter ou modifier un adhérent il suffit de remplir les informations
-            dans le formulaire ci dessous :
-        </p>
+<div id="page">
+<h2>Ajout ou modification d'un adhérent</h2>
+<p>
+    Pour ajouter ou modifier un adhérent il suffit de remplir les informations
+    dans le formulaire ci dessous :
+</p>
 
 <?php
 
@@ -160,7 +148,6 @@ if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
     echo $section_supprimer;
 }
 
-?>
+afficher_footer()
 
-    </body>
-</html>
+?>

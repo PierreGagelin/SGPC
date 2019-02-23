@@ -8,6 +8,9 @@ ini_set('display_startup_errors', true);
 
 require_once('sgpc_session.php');
 require_once("donnees.php");
+require_once("member.php");
+require_once('vue.php');
+require_once("mail.php");
 
 if (is_connected() == false)
 {
@@ -15,22 +18,7 @@ if (is_connected() == false)
     exit();
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Liste des adhérents</title>
-    </head>
-    <body>
-
-<?php
-
-require_once("member.php");
-require_once('vue.php');
-
+afficher_header("Liste des adhérents");
 afficher_navigation();
 afficher_filtre("liste_adherents.php");
 
@@ -64,9 +52,6 @@ if (!empty($_POST) && isset($_POST['ajouter']))
             }
         }
 
-        // on notifie par mail la création
-        require_once("mail.php");
-
         $message = "";
         $message .= "<p>Message provenant de 'liste_adherents.php' :</p>";
         $message .= "<p>Création d'un adhérent suite à la saisie du formulaire d'ajout</p>";
@@ -91,8 +76,6 @@ elseif(!empty($_POST) && isset($_POST['modifier']) && isset($_POST['numero_adher
         }
     }
 
-    require_once("mail.php");
-
     $message = "";
     $message .= "<p>Message provenant de 'liste_adherents.php' :</p>";
     $message .= "<p>Modification d'un adhérent suite à la saisie du formulaire</p>";
@@ -105,7 +88,6 @@ elseif(!empty($_POST) && isset($_POST['modifier']) && isset($_POST['numero_adher
 // ce bouton enverra vers la page "ajouter_adherent.php"
 afficher_liste_adherents("ajouter_adherent.php", "afficher");
 
-?>
+afficher_footer();
 
-    </body>
-</html>
+?>

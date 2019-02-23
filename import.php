@@ -6,8 +6,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
-require_once('sgpc_session.php');
+require_once("sgpc_session.php");
 require_once("donnees.php");
+require_once("member.php");
+require_once("vue.php");
+require_once("Classes/PHPExcel.php");
 
 if (is_priviledged() == false)
 {
@@ -15,24 +18,7 @@ if (is_priviledged() == false)
     exit();
 }
 
-?>
-
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" href="style.css" />
-        <title>Importer XSLX</title>
-    </head>
-    <body>
-
-<?php
-
-require_once("member.php");
-require_once("vue.php");
-
-require_once('Classes/PHPExcel.php');
-
+afficher_header("Importer XSLX");
 afficher_navigation();
 afficher_import_excel();
 
@@ -223,49 +209,8 @@ if (!empty($_FILES))
     $objPHPExcel = $objReader->load($destination);
     $feuille = $objPHPExcel->setActiveSheetIndex(0);
     parse_excel($feuille);
-    // $excel_cols = recuperer_colonnes($feuille);
-    // afficher_colonnes_manquantes($excel_cols);
-    // traitement_entrees($feuille, $excel_cols);
 }
 
-
-/*
-require_once('Classes/PHPExcel.php');
-
-// Create new PHPExcel object
-$objPHPExcel = new PHPExcel();
-
-// ouvrir le fichier excel
-$fileType = 'Excel2007';
-$fileName = '00SGPC20160517.xlsx';
-$objReader = PHPExcel_IOFactory::createReader($fileType);
-$objPHPExcel = $objReader->load($fileName);
-
-// Set document properties
-$objPHPExcel->getProperties()->setCreator("SGPC-CFE-CGC")
-							 ->setLastModifiedBy("SGPC-CFE-CGC")
-							 ->setTitle("trésorerie")
-							 ->setSubject("trésorerie")
-							 ->setDescription("excel pour la trésorerie")
-							 ->setKeywords("excel trésorerie php")
-							 ->setCategory("trésorerie");
-
-// lecture du fichier PHP
-// Highest Column As Letter
-$HCAL = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
-// Highest Row Number
-$HRN = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
-$HCAL++;
-for ($row = 1; $row < $HRN + 1; $row++) {
-  echo "ligne $row : ";
-  for ($CAL = 'A'; $CAL != $HCAL; $CAL++) {
-    echo $objPHPExcel->setActiveSheetIndex(0)
-                             ->getCell($CAL.$row)->getValue() . ' ';
-  }
-}
-*/
+afficher_footer();
 
 ?>
-
-    </body>
-</html>
