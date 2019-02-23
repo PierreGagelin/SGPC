@@ -39,7 +39,7 @@ afficher_filtre("ajouter_adherent.php");
 
 ?>
 
-<div id="page">
+<div class="section">
 <h2>Ajout ou modification d'un adhérent</h2>
 <p>
     Pour ajouter ou modifier un adhérent il suffit de remplir les informations

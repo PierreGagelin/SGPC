@@ -34,7 +34,8 @@ function afficher_footer()
 function afficher_import_excel()
 {
     $import_excel = "";
-    $import_excel .= "<div class='fond_gris'>";
+
+    $import_excel .= "<div class='standalone'>";
     $import_excel .= "<p>Veuillez choisir le fichier à importer :</p>";
     $import_excel .= '<form method="post" action="import.php" enctype="multipart/form-data">';
     $import_excel .= "<input type='file' name='fichier_excel' /><br />";
@@ -162,7 +163,7 @@ function afficher_liste_adherents($page, $type)
     }
 
     $entry = "";
-    $entry .= "<div id='liste'>";
+    $entry .= "<div class='section'>";
     $entry .= "<h2>Liste des adhérents</h2>";
 
     $id_list = member_get_list();
@@ -248,7 +249,7 @@ function afficher_transition_annuelle()
 {
     $entry = "";
 
-    $entry .= '<div id="transition">';
+    $entry .= '<div class="section">';
     $entry .= '<h2>Basculement des cotisations</h2>';
     $entry .= "<p><strong>ATTENTION</strong> : cette action est à réaliser avec précaution. Elle a pour but d'effectuer la transition annuelle des comptes.</p>";
     $entry .= "<p>Si vous cliquez sur le bouton, les données de l'année précédente seront effacées et remplacées par celles de l'année courante.</p>";

@@ -25,9 +25,9 @@ if (!empty($_POST) && isset($_POST["transition"]))
     basculer_cotisations();
 
     $message = "";
-    $message .= "<div id='transition'>";
-    $message .= "    Basculement effectué avec succès<br />";
-    $message .= "    Il est conseillé de vérifier le résultat en important le nouveau fichier Excel ainsi généré<br />";
+    $message .= "<div class='section'>";
+    $message .= "Basculement effectué avec succès<br />";
+    $message .= "Il est conseillé de vérifier le résultat en important le nouveau fichier Excel ainsi généré<br />";
     $message .= "</div>";
 
     echo $message;

@@ -63,7 +63,7 @@ afficher_header("Page d'accueil");
 
 ?>
 
-<div class="fond_gris">
+<div class="standalone">
     <p>
         Merci de vous connecter pour pouvoir continuer :
     </p>
