@@ -33,134 +33,113 @@ else
 function generer_frontiere()
 {
     global $passage_ligne;
+
     $frontiere = md5(rand());
     $frontieres = array();
     $frontieres["frontiere"] = $frontiere;
     $frontieres["ouverture"] = $passage_ligne . "--" . $frontiere . $passage_ligne;
     $frontieres["fermeture"] = $passage_ligne . "--" . $frontiere . "--" . $passage_ligne;
+
     return $frontieres;
 }
 
 function ajouter_expediteur($contact)
 {
     global $passage_ligne;
-    if (isset($contact["nom"]) && isset($contact["adresse"]))
+
+    if ((array_key_exists("nom", $contact) == false) || (array_key_exists("adresse", $contact) == false))
     {
-        $nom = $contact["nom"];
-        $adresse = $contact["adresse"];
+        return "";
     }
-    else
-    {
-        return 0;
-    }
+
+    $nom = $contact["nom"];
+    $adresse = $contact["adresse"];
+
     $expediteur = "From: \"$nom\"<$adresse>$passage_ligne";
+
     return $expediteur;
 }
 
 function ajouter_destinataire_reponse($contact)
 {
     global $passage_ligne;
-    if (isset($contact["nom"]) && isset($contact["adresse"]))
+
+    if ((array_key_exists("nom", $contact) == false) || (array_key_exists("adresse", $contact) == false))
     {
-        $nom = $contact["nom"];
-        $adresse = $contact["adresse"];
+        return "";
     }
-    else
-    {
-        return 0;
-    }
+
+    $nom = $contact["nom"];
+    $adresse = $contact["adresse"];
+
     $retour = "Reply-to: \"$nom\" <$adresse>$passage_ligne";
+
     return $retour;
 }
 
 function ajouter_type_contenu($type, $frontiere)
 {
     global $passage_ligne;
+
     $contenu = "Content-Type: $type;$passage_ligne boundary=\"$frontiere\"$passage_ligne";
+
     return $contenu;
 }
 
 function header_mail($expediteur, $destinataire, $type, $frontiere)
 {
     global $passage_ligne;
+
     $header = "";
     $header .= ajouter_expediteur($expediteur);
     $header .= ajouter_destinataire_reponse($expediteur);
     $header .= "MIME-Version: 1.0$passage_ligne";
     $header .= ajouter_type_contenu($type, $frontiere);
+
     return $header;
 }
 
 function header_PLAIN()
 {
     global $passage_ligne;
+
     $header_plain = "";
     $header_plain .= "Content-Type: text/plain; charset=\"UTF-8\"$passage_ligne";
     $header_plain .= "Content-Transfer-Encoding: 8bit$passage_ligne";
+
     return $header_plain;
 }
 
 function header_HTML()
 {
     global $passage_ligne;
+
     $header_html = "";
     $header_html .= "Content-Type: text/html; charset=\"UTF-8\"$passage_ligne";
     $header_html .= "Content-Transfer-Encoding: 8bit$passage_ligne";
+
     return $header_html;
 }
 
 function ajouter_messages($message_html, $message_plain, $frontieres)
 {
     global $passage_ligne;
-    $ouverture_frontiere = $frontieres["ouverture"];
-    $fermeture_frontiere = $frontieres["fermeture"];
 
     $message = "";
 
-    $message .= $ouverture_frontiere;
+    $message .= $frontieres["ouverture"];
     $message .= header_PLAIN();
     $message .= $passage_ligne . $message_plain . $passage_ligne;
 
-    $message .= $ouverture_frontiere;
+    $message .= $frontieres["ouverture"];
     $message .= header_HTML();
     $message .= $passage_ligne . $message_html . $passage_ligne;
 
-    $message .= $fermeture_frontiere;
-    $message .= $fermeture_frontiere;
+    $message .= $frontieres["fermeture"];
+    $message .= $frontieres["fermeture"];
 
     return $message;
 }
-
-function test_mail()
-{
-    global $contact_sgpc;
-    global $passage_ligne;
-    $frontieres = generer_frontiere();
-    $frontiere = $frontieres["frontiere"];
-    $ouverture_frontiere = $frontieres["ouverture"];
-    $fermeture_frontiere = $frontieres["fermeture"];
-
-    $message_html = "<html><head></head><body><b>Salut</b> poulet</body></html>";
-    $message_plain = "Salut ma poule";
-
-    $message = $ouverture_frontiere;
-    $message .= header_PLAIN();
-    $message .= $passage_ligne . $message_plain . $passage_ligne;
-
-    $message .= $ouverture_frontiere;
-    $message .= header_HTML();
-    $message .= $passage_ligne . $message_html . $passage_ligne;
-
-    $message .= $fermeture_frontiere;
-    $message .= $fermeture_frontiere;
-
-    $header = header_mail($contact_sgpc, $contact_sgpc, "multipart/alternative", $frontiere);
-    $sujet = "Mail de test";
-    mail($contact_sgpc["adresse"], $sujet, $message, $header);
-}
-
-//test_mail();
-//echo "Fin de l'envoi";
 
 // mail notifiant la suppression d'une colonne pour un adhérent
 //    @numero_adherent : numéro de l'adhérent concerné
@@ -169,13 +148,13 @@ function test_mail()
 //    @adherent_legacy : état de l'adhérent avant suppression
 function mail_supprimer_colonne($numero_adherent, $colonne, $message, $adherent_legacy)
 {
-    if (!is_connected())
+    global $contact_sgpc;
+    global $contact_mail;
+
+    if (is_connected() == false)
     {
         return;
     }
-
-    global $contact_sgpc;
-    global $contact_mail;
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
@@ -207,13 +186,13 @@ function mail_supprimer_colonne($numero_adherent, $colonne, $message, $adherent_
 
 function mail_creer_adherent($numero_adherent, $message)
 {
-    if (!is_connected())
+    global $contact_sgpc;
+    global $contact_mail;
+
+    if (is_connected() == false)
     {
         return;
     }
-
-    global $contact_sgpc;
-    global $contact_mail;
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
@@ -243,14 +222,15 @@ function mail_creer_adherent($numero_adherent, $message)
 
 function mail_modifier_adherent($modifications, $message, $adherent_legacy)
 {
-    if (!is_connected() || !isset($modifications["numero_adherent"]))
+    global $contact_sgpc;
+    global $contact_mail;
+
+    if ((is_connected() == false) || (isset($modifications["numero_adherent"]) == false))
     {
         return;
     }
-    $numero_adherent = $modifications["numero_adherent"];
 
-    global $contact_sgpc;
-    global $contact_mail;
+    $numero_adherent = $modifications["numero_adherent"];
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
