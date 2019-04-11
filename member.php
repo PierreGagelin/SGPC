@@ -79,22 +79,14 @@ function member_update($id, $column, $value, $update = true)
     return $id;
 }
 
-function member_add($id = null)
+function member_add()
 {
     global $MEMBER_ARRAY;
 
-    if ($id == null)
-    {
-        $id = member_get_last_id();
+    $id = member_get_last_id();
 
-        // Alphanumerical incrementation
-        $id++;
-    }
-
-    if (member_exist($id) == true)
-    {
-        return;
-    }
+    // Alphanumerical incrementation
+    $id++;
 
     $MEMBER_ARRAY[$id] = array(
         "numero_adherent" => $id,

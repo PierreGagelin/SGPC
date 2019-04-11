@@ -96,8 +96,6 @@ function is_priviledged()
 // tableau qui permet les vérifications
 //   - contient une expression régulière
 //   - un message d'erreur si la regex ne match pas
-//XXX: va de pair avec les fonctions verifier_XXX
-//XXX: est censé les remplacer : plus générique mais moins flexible
 $verification = array(
     "numero_adherent" => array(
         "regex" => "#^[A-Z]{2}[0-9]{3}$#",

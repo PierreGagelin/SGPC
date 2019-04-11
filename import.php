@@ -73,47 +73,6 @@ function afficher_colonnes_manquantes($excel_cols)
     }
 }
 
-// mets à jour les entrées ayant un numéro d'adhérent existant
-// crée un adhérent pour celles qui n'ont pas de numéro
-function traitement_entrees($feuille, $excel_cols)
-{
-    $clefs = array_keys($excel_cols);
-    $num_ad_existe = isset($excel_cols['numero_adherent']);
-    $HRN = $feuille->getHighestRow();
-    for($ligne = 2 ; $ligne < $HRN + 1 ; $ligne++)
-    {
-        $nom = $feuille->getCell($excel_cols['nom'] . $ligne)->getValue();
-        $prenom = $feuille->getCell($excel_cols['prenom'] . $ligne)->getValue();
-
-        echo "Traitement d'une ligne [numero=$ligne ; nom=$nom ; prenom=$prenom]<br />";
-
-        if ($num_ad_existe)
-        {
-            $num_ad = $feuille->getCell($excel_cols['numero_adherent'] . $ligne)->getValue();
-            verifier("numero_adherent", $num_ad);
-        }
-        else
-        {
-            $num_ad = null;
-        }
-
-        member_add($num_ad);
-
-        foreach($clefs as $clef)
-        {
-            $valeur = $feuille->getCell($excel_cols[$clef] . $ligne)->getValue();
-            // les deux lignes qui suivent sont un peu hasardeuses...
-            // la feuille Excel est censée être en UTF-8 directement
-            $valeur = iconv("UTF-8", "ISO-8859-1", $valeur);
-            $valeur = utf8_encode($valeur);
-            echo "...verification colonne : $clef, valeur : $valeur<br />";
-            insere($num_ad, $clef, $valeur);
-        }
-
-        echo "----ligne traitée avec succès [numero=$ligne]<br /><br />";
-    }
-}
-
 //
 // Parse an Excel sheet
 //
