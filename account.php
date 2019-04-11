@@ -42,7 +42,7 @@ function account_store()
         die("Echec de l'encodage JSON [object=$ACCOUNT_ARRAY]");
     }
 
-    $res = file_put_contents($ACCOUNT_FILE, $json);
+    $res = file_put_contents($ACCOUNT_FILE, $json, LOCK_EX);
     if ($res == false)
     {
         die("Echec de l'écriture du fichier [fichier=$ACCOUNT_FILE]");

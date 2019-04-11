@@ -39,7 +39,7 @@ function member_store()
         die("Echec de l'encodage JSON [object=$MEMBER_ARRAY]");
     }
 
-    $res = file_put_contents($MEMBER_FILE, $json);
+    $res = file_put_contents($MEMBER_FILE, $json, LOCK_EX);
     if ($res == false)
     {
         die("Echec de l'écriture du fichier [fichier=$MEMBER_FILE]");
