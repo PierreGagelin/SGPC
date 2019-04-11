@@ -45,11 +45,6 @@ if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identif
 {
     $user = $_POST["identifiant"];
 
-    if (is_priviledged() == false)
-    {
-        die("Echec de la suppression du compte : vous n'avez pas les droits");
-    }
-
     account_del($user);
 }
 
@@ -57,9 +52,9 @@ if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identif
 afficher_navigation();
 
 // Afficher les comptes ainsi que les opérations de gestion associées
-afficher_liste_comptes();
 afficher_ajouter_compte();
 afficher_supprimer_compte();
+afficher_liste_comptes();
 
 afficher_footer();
 

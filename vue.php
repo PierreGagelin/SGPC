@@ -249,9 +249,9 @@ function afficher_ajouter_compte()
     $entry .= "<p>Remplir le formulaire pour ajouter le compte : </p>";
     $entry .= '<form method="post" action="comptes.php">';
     $entry .= '<input type="hidden" name="ajouter_compte" value="inutile">';
-    $entry .= "{$vue['region_compte']}";
-    $entry .= "{$vue['identifiant']}";
-    $entry .= "{$vue['mot_de_passe']}";
+    $entry .= "region : {$vue['region_compte']}";
+    $entry .= "identifiant : {$vue['identifiant']}";
+    $entry .= "mot de passe : {$vue['mot_de_passe']}";
     $entry .= "<input type='submit' value='Ajouter'>";
     $entry .= "</form>";
     $entry .= "</div>";
@@ -270,9 +270,7 @@ function afficher_supprimer_compte()
     $entry .= "<p>Remplir le formulaire pour supprimer le compte : </p>";
     $entry .= '<form method="post" action="comptes.php">';
     $entry .= '<input type="hidden" name="supprimer_compte" value="inutile">';
-    $entry .= $vue['region_compte'];
-    $entry .= $vue['identifiant'];
-    $entry .= $vue['mot_de_passe'];
+    $entry .= "identifiant : {$vue['identifiant']}";
     $entry .= "<input type='submit' value='Supprimer'>";
     $entry .= "</form>";
     $entry .= "</div>";
