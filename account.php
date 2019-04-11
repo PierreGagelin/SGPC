@@ -80,13 +80,13 @@ function account_password_exist($user, $password)
 }
 
 // Add an account
-function account_add($user, $password, $region)
+function account_add($user, $password, $region_name)
 {
     global $ACCOUNT_ARRAY;
 
     $ACCOUNT_ARRAY[$user] = array(
         "password" => $password,
-        "region" => $region,
+        "region" => $region_name,
         "priviledged" => false
     );
     account_store();

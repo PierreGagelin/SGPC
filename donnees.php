@@ -384,29 +384,31 @@ function verifier($colonne, $valeur)
     }
 }
 
-// renvoie le numéro de l'adhérent créé en cas de succès
-function creer_adherent($lastname, $firstname)
+// Add a new SGPC member and return its identifier
+function sgpc_member_add($lastname, $firstname, $region_name)
 {
     verifier("prenom", $firstname);
     verifier("nom", $lastname);
+    verifier("region", $region_name);
 
     $numero_adherent = member_add();
+
     member_update($numero_adherent, "prenom", $firstname);
     member_update($numero_adherent, "nom", $lastname);
+    member_update($numero_adherent, "region", $region_name);
 
     return $numero_adherent;
 }
 
-// insère :
-//   - la valeur $valeur
-//   - dans la colonne $colonne
-//   - pour l'adhérent $numero_adherent
-function insere($numero_adherent, $colonne, $valeur)
+// Update SGPC member attribute
+function sgpc_member_update($numero_adherent, $colonne, $valeur)
 {
-    if (empty($valeur) || ($colonne == "numero_adherent"))
+    if ($colonne == "numero_adherent")
     {
+        // Cannot update member identifier
         return;
     }
+
     verifier($colonne, $valeur);
 
     member_update($numero_adherent, $colonne, $valeur);

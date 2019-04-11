@@ -126,7 +126,12 @@ if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
     }
     foreach($colonnes as $colonne)
     {
-        if (($colonne != "numero_adherent") && isset($adherent[$colonne]))
+        if (($colonne != "numero_adherent") &&
+            ($colonne != "nom") &&
+            ($colonne != "prenom") &&
+            ($colonne != "region") &&
+            (array_key_exists($colonne, $adherent) == true) &&
+            (empty($adherent[$colonne]) == false))
         {
             $formulaire = "";
             $formulaire .= "<form action='ajouter_adherent.php' method='post'>";

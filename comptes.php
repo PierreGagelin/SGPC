@@ -25,7 +25,7 @@ if (!empty($_POST) && isset($_POST["ajouter_compte"]))
     {
         $user = $_POST["identifiant"];
         $password = $_POST["mot_de_passe"];
-        $region = $_POST["region"];
+        $region_name = $_POST["region"];
 
         if (is_priviledged() == false)
         {
@@ -34,9 +34,9 @@ if (!empty($_POST) && isset($_POST["ajouter_compte"]))
 
         verifier("identifiant", $user);
         verifier("mot_de_passe", $password);
-        verifier("region_compte", $region);
+        verifier("region_compte", $region_name);
 
-        account_add($user, $password, $region);
+        account_add($user, $password, $region_name);
     }
 }
 
