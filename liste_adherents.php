@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
-require_once('sgpc_session.php');
 require_once("donnees.php");
 require_once("member.php");
 require_once('vue.php');
@@ -20,7 +19,6 @@ if (is_connected() == false)
 
 afficher_header("Liste des adhérents");
 afficher_navigation();
-afficher_filtre("liste_adherents.php");
 
 // si l'adhérent a été ajouté, on reçoit un POST avec 'ajouter'
 // si l'adhérent a été modifié, on reçoit un POST avec 'modifier'

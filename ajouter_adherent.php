@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 ini_set('display_startup_errors', true);
 
-require_once('sgpc_session.php');
 require_once('donnees.php');
 require_once('vue.php');
 require_once("mail.php");
@@ -35,7 +34,6 @@ if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_a
 
 afficher_header("Ajout ou modification d'adhérent");
 afficher_navigation();
-afficher_filtre("ajouter_adherent.php");
 
 ?>
 
@@ -74,31 +72,30 @@ else
     $type = "Ajouter";
 }
 
-// routine d'affichage des lignes
-//   - en fonction du filtre de session
-//   - des données présentes dans le POST
+// Fill the member form
 foreach($colonnes as $colonne)
 {
     if (isset($vue[$colonne]))
     {
-        if ( !empty($_SESSION) && isset($_SESSION['filtre']) && $_SESSION['filtre'][$colonne] == 'off')
+        $ligne = "$colonne : ";
+
+        if (isset($adherent[$colonne]))
         {
-            // on affiche rien
+            // Add the current value associated to this entry
+            $ligne .= "({$adherent[$colonne]})";
         }
-        elseif (isset($adherent[$colonne]))
-        {
-            $ligne = "$colonne : ({$adherent[$colonne]}){$vue[$colonne]}";
-            $formulaire .= $ligne;
-        }
-        else
-        {
-            $ligne = "$colonne : " . $vue[$colonne];
-            $formulaire .= $ligne;
-        }
+
+        $ligne .= $vue[$colonne];
+
+        $formulaire .= $ligne;
     }
 }
-$formulaire .=  "<input type='submit' value='$type'></form>";
-echo $formulaire . "</div>";
+
+$formulaire .= "<input type='submit' value='$type'>";
+$formulaire .= "</form>";
+$formulaire .= "</div>";
+
+echo $formulaire;
 
 //
 // Section pour supprimer des informations spécifiques à l'adhérent

@@ -17,7 +17,6 @@ if (is_priviledged() == false)
 
 afficher_header("Fonctions Nationales");
 afficher_navigation();
-afficher_filtre("national.php");
 
 // basculement des cotisations de l'année courante vers la colonne d'archive
 if (!empty($_POST) && isset($_POST["transition"]))

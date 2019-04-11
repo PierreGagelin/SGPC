@@ -55,7 +55,6 @@ if (!empty($_POST) && isset($_POST["supprimer_compte"]) && isset($_POST["identif
 
 // Afficher la barre de navigation
 afficher_navigation();
-afficher_filtre("national.php");
 
 // Afficher les comptes ainsi que les opérations de gestion associées
 afficher_liste_comptes();

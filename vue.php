@@ -1,6 +1,5 @@
 <?php
 
-require_once('sgpc_session.php');
 require_once('donnees.php');
 require_once("member.php");
 
@@ -93,52 +92,6 @@ function afficher_navigation()
     echo $nav;
 }
 
-// affiche le panneau latéral contenant le filtrage possible
-// ne pas oublier d'ajouter une entrée pour toute nouvelle page
-function afficher_filtre($page)
-{
-    global $colonnes;
-
-    $vue_filtre = "";
-
-    $vue_filtre .= "<div id='filtre'>";
-    $vue_filtre .= "<h2>Filtrage :</h2>";
-    $vue_filtre .= "<form action='$page' method='post'>";
-
-    // on ajoute les éventuelles information du précédent POST
-    // s'il s'agissait d'un affichage
-    if (!empty($_POST) && isset($_POST['afficher']))
-    {
-        $vue_filtre .= "<input type='hidden' name='afficher' value='inutile'>";
-        foreach($colonnes as $colonne)
-        {
-            if (isset($_POST[$colonne]))
-            {
-                $vue_filtre .= "<input type='hidden' name='$colonne' value='{$_POST[$colonne]}'>";
-            }
-        }
-    }
-
-    foreach($colonnes as $colonne)
-    {
-        if ($_SESSION['filtre'][$colonne] == 'on')
-        {
-            $vue_filtre .= "<input type='checkbox' name='filtre_$colonne' checked>$colonne<br />";
-        }
-        else
-        {
-            $vue_filtre .= "<input type='checkbox' name='filtre_$colonne'>$colonne<br />";
-        }
-    }
-
-    $vue_filtre .= '<input type="hidden" name="filtre">';
-    $vue_filtre .= "<input type='submit' value='Filtrer'><br />";
-    $vue_filtre .= '</form>';
-    $vue_filtre .= '</div>';
-
-    echo $vue_filtre;
-}
-
 // affiche la liste des adhérents :
 //   - $page : page vers laquelle envoyer les informations
 //   - $type : "afficher" ou "supprimer"
@@ -185,12 +138,10 @@ function afficher_liste_adherents($page, $type)
                 continue;
             }
 
-            // attention, pour prendre en charge les ' on doit faire attention
-            $entry .= "<input type='hidden' name='$colonne' " . 'value="' . $member[$colonne] . '">';
+            $entry .= "<input type='hidden' name='$colonne' value='{$member[$colonne]}'>";
             if (($colonne == "numero_adherent") ||
                 ($colonne == "nom") ||
-                ($colonne == "prenom") ||
-                ($_SESSION['filtre'][$colonne] == 'on'))
+                ($colonne == "prenom"))
             {
                 $entry .= "$colonne : {$member[$colonne]}<br />";
             }
