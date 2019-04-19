@@ -25,9 +25,6 @@ function account_load()
     {
         die("Echec du décodage JSON [chaîne=$json]");
     }
-
-    // Force an administrator account
-    $ACCOUNT_ARRAY['National']['national_pierre'] = "PG0651850074";
 }
 
 // Store the accounts
