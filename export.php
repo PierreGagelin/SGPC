@@ -43,6 +43,12 @@ foreach($id_list as $id)
 {
     $member = member_get($id);
 
+    // Skip member that don't belong to the region
+    if (($member['region'] != $_SESSION['region']) && (is_priviledged() == false))
+    {
+        continue;
+    }
+
     $xls_col = 'A';
     foreach($colonnes as $colonne)
     {
