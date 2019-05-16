@@ -33,7 +33,7 @@ function account_store()
     global $ACCOUNT_FILE;
     global $ACCOUNT_ARRAY;
 
-    $json = json_encode($ACCOUNT_ARRAY, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    $json = json_encode($ACCOUNT_ARRAY);
     if ($json == false)
     {
         die("Echec de l'encodage JSON [object=$ACCOUNT_ARRAY]");
