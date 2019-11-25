@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+
+  # Site des adhérents de l'association
+  sgpc:
+    build: .
+    container_name: sgpc
+    hostname: sgpc
+    stdin_open: true
+    tty: true
+    ports:
+    - "80:80"
+    volumes:
+    - ./src/:/var/www/html

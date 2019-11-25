@@ -1,0 +1,12 @@
+{
+    "root": {
+        "password": "root",
+        "region": "National",
+        "priviledged": true
+    },
+    "user": {
+        "password": "user",
+        "region": "Auvergne",
+        "priviledged": false
+    }
+}
