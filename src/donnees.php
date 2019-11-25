@@ -229,6 +229,11 @@ $profession = array(
     "MCR",
 );
 $region = array(
+    "Aura",
+    "Nouvelle-Aquitaine",
+    "Occitanie",
+    "Grand Est",
+    "Hauts-de-France",
     "Alsace-Moselle",
     "Aquitaine",
     "Auvergne",
@@ -251,6 +256,11 @@ $region = array(
     "TN",
 );
 $region_compte = array(
+    "Aura",
+    "Nouvelle-Aquitaine",
+    "Occitanie",
+    "Grand Est",
+    "Hauts-de-France",
     "Alsace-Moselle",
     "Aquitaine",
     "Auvergne",
