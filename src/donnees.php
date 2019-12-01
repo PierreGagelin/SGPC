@@ -494,3 +494,5 @@ function basculer_cotisations()
     copier_colonne("cotis_payee", "adhesion");
     supprimer_colonne("cotis_payee");
 }
+
+?>
