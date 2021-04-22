@@ -33,7 +33,7 @@ function member_store()
     global $MEMBER_FILE;
     global $MEMBER_ARRAY;
 
-    $json = json_encode($MEMBER_ARRAY);
+    $json = json_encode($MEMBER_ARRAY, JSON_PRETTY_PRINT);
     if ($json == false)
     {
         die("Echec de l'encodage JSON [object=$MEMBER_ARRAY]");

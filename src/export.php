@@ -8,7 +8,7 @@ ini_set('display_startup_errors', true);
 
 require_once("donnees.php");
 require_once('vue.php');
-require_once('Classes/PHPExcel.php');
+require_once('vendor/autoload.php');
 
 if (is_connected() == false)
 {
@@ -19,25 +19,26 @@ if (is_connected() == false)
 afficher_header("Exporter Excel");
 afficher_navigation();
 
+// Create a spreadsheet
+$spreadsheet = new PhpOffice\PhpSpreadsheet\Spreadsheet();
+$worksheet = $spreadsheet->getSheet(0);
 
-// Create new PHPExcel object
-$objPHPExcel = new PHPExcel();
-
-// feuille Excel de travail
-$feuille = $objPHPExcel->setActiveSheetIndex(0);
-$feuille->setTitle('Feuille 1');
-
-// on entre les noms de colonne sur la première ligne
+// Set column names on the first line
 $xls_col = 'A';
 $xls_lig = '1';
 foreach($colonnes as $colonne)
 {
-    $feuille->setCellValue($xls_col . $xls_lig, $colonne);
+    $worksheet->setCellValue($xls_col . $xls_lig, $colonne);
+
+    // Adapt column size to content
+    $dimensions = $worksheet->getColumnDimension($xls_col);
+    $dimensions->setAutoSize(true);
+
     $xls_col++;
 }
 $xls_lig++;
 
-// on rempli les données ligne par ligne
+// Fill each line with a member
 $id_list = member_get_list();
 foreach($id_list as $id)
 {
@@ -54,18 +55,16 @@ foreach($id_list as $id)
     {
         if (isset($member[$colonne]) == true)
         {
-            $feuille->setCellValue($xls_col . $xls_lig, $member[$colonne]);
+            $worksheet->setCellValue($xls_col . $xls_lig, $member[$colonne]);
         }
         $xls_col++;
     }
     $xls_lig++;
 }
 
-// sauvegarder au format .xls (Excel 95)
-//$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-// sauvegarder au format .xlsx (Excel 2007)
-$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-$objWriter->save("{$_SESSION['region']}/export.xlsx");
+// Save spreadsheet
+$writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+$writer->save("{$_SESSION['region']}/export.xlsx");
 
 $lien_telecharger = "";
 $lien_telecharger .= "<form action='{$_SESSION['region']}/export.xlsx' method='get'>";
