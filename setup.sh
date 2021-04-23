@@ -52,6 +52,8 @@ function docker_run()
     opt_list+=("--rm")
     opt_list+=("--name" "sgpc")
     opt_list+=("--hostname" "sgpc")
+    opt_list+=("--mount" "type=bind,src=/etc/timezone,dst=/etc/timezone")
+    opt_list+=("--mount" "type=bind,src=/etc/localtime,dst=/etc/localtime")
     opt_list+=("--mount" "type=bind,src=${dir_src},dst=/workspace/src")
     opt_list+=("--publish" "80:80")
 
