@@ -4,146 +4,118 @@
 // Library for member management
 //
 
-$MEMBER_FILE = 'adherents.json';
-$MEMBER_ARRAY = array();
+require_once("database.php");
 
-// Load the members
-function member_load()
+function member_add($lastname, $firstname, $region)
 {
-    global $MEMBER_FILE;
-    global $MEMBER_ARRAY;
+    $db = db_open();
 
-    $json = file_get_contents($MEMBER_FILE);
-    if ($json == false)
+    // Lock database to prevent primary key to be incremented by someone else
+    $rep = db_query($db, "LOCK TABLES member WRITE;");
+    if ($rep == false)
     {
-        die("Echec de la lecture du fichier [fichier=$MEMBER_FILE]");
+        goto end;
     }
 
-    // Decode as an associative array
-    $MEMBER_ARRAY = json_decode($json, true);
-    if ($MEMBER_ARRAY == null)
+    // Get last member id
+    $rep = db_query($db, "SELECT * FROM member ORDER BY numero_adherent DESC LIMIT 1;");
+    if ($rep == false)
     {
-        die("Echec du décodage JSON [chaîne=$json]");
+        goto end;
     }
-}
-
-// Store the members
-function member_store()
-{
-    global $MEMBER_FILE;
-    global $MEMBER_ARRAY;
-
-    $json = json_encode($MEMBER_ARRAY, JSON_PRETTY_PRINT);
-    if ($json == false)
+    $account = $rep->fetch_array(MYSQLI_ASSOC);
+    if ($account == null)
     {
-        die("Echec de l'encodage JSON [object=$MEMBER_ARRAY]");
+        // Table is empty, we initialize it
+        $id = "AA000";
     }
-
-    $res = file_put_contents($MEMBER_FILE, $json, LOCK_EX);
-    if ($res == false)
+    else
     {
-        die("Echec de l'écriture du fichier [fichier=$MEMBER_FILE]");
+        $id = $account["numero_adherent"];
     }
-}
+    $rep->close();
 
-function member_get_last_id()
-{
-    global $MEMBER_ARRAY;
-
-    $keys = array_keys($MEMBER_ARRAY);
-    $max = max($keys);
-
-    return $max;
-}
-
-function member_exist($id)
-{
-    global $MEMBER_ARRAY;
-
-    $exists = array_key_exists($id, $MEMBER_ARRAY);
-
-    return $exists;
-}
-
-function member_update($id, $column, $value, $update = true)
-{
-    global $MEMBER_ARRAY;
-
-    $MEMBER_ARRAY[$id][$column] = $value;
-
-    if ($update == true)
-    {
-        member_store();
-    }
-
-    return $id;
-}
-
-function member_add()
-{
-    global $MEMBER_ARRAY;
-
-    $id = member_get_last_id();
-
-    // Alphanumerical incrementation
+    // Alphanumeric incrementation
     $id++;
 
-    $MEMBER_ARRAY[$id] = array(
-        "numero_adherent" => $id,
-    );
+    $query = "";
+    $query .= "INSERT INTO member (numero_adherent, nom, prenom, region) ";
+    $query .= "VALUES ('$id', '$lastname', '$firstname', '$region');";
+    $rep = db_query($db, $query);
 
-    member_store();
+end:
+    db_query($db, "UNLOCK TABLES;");
+    db_close($db);
+
+    if ($rep == false)
+    {
+        die("Erreur : échec de la création de l'adhérent nom=$lastname prenom=$firstname region=$region");
+    }
 
     return $id;
 }
 
 function member_del($id)
 {
-    global $MEMBER_ARRAY;
+    $db = db_open();
+    $rep = db_query($db, "DELETE FROM member WHERE numero_adherent = '$id';");
+    db_close($db);
 
-    if (member_exist($id) == false)
+    if ($rep != true)
     {
-        return;
+        die("Erreur : échec de la suppression de l'adhérent numero_adherent=$id");
     }
+}
 
-    unset($MEMBER_ARRAY[$id]);
-    member_store();
+function member_update($id, $column, $value)
+{
+    $db = db_open();
+    $rep = db_query($db, "UPDATE member SET $column = '$value' WHERE numero_adherent = '$id';");
+    db_close($db);
+
+    if ($rep != true)
+    {
+        die("Erreur : échec de la mise à jour de l'adhérent numero_adherent=$id colonne=$column valeur=$value");
+    }
 }
 
 function member_attr_del($id, $column)
 {
-    global $MEMBER_ARRAY;
+    $db = db_open();
+    $rep = db_query($db, "UPDATE member SET $column = NULL WHERE numero_adherent = '$id';");
+    db_close($db);
 
-    if (member_exist($id) == false)
+    if ($rep != true)
     {
-        return;
+        die("Erreur : échec de la suppression de la colonne de l'adhérent numero_adherent=$id colonne=$column");
     }
-
-    $member = member_get($id);
-    if (array_key_exists($column, $member) == false)
-    {
-        return;
-    }
-
-    unset($MEMBER_ARRAY[$id][$column]);
-    member_store();
 }
 
 function member_get($id)
 {
-    global $MEMBER_ARRAY;
+    $db = db_open();
+    $rep = db_query($db, "SELECT * FROM member WHERE numero_adherent = '$id';");
+    $member = $rep->fetch_array(MYSQLI_ASSOC);
+    $rep->close();
+    db_close($db);
 
-    return $MEMBER_ARRAY[$id];
+    if ($member == null)
+    {
+        die("Erreur : échec de la consultation de l'adhérent numero_adherent=$id");
+    }
+
+    return $member;
 }
 
 function member_get_list()
 {
-    global $MEMBER_ARRAY;
+    $db = db_open();
+    $rep = db_query($db, "SELECT * FROM member;");
+    $member_list = $rep->fetch_all(MYSQLI_ASSOC);
+    $rep->close();
+    db_close($db);
 
-    return array_keys($MEMBER_ARRAY);
+    return $member_list;
 }
-
-// Initial load of members
-member_load();
 
 ?>

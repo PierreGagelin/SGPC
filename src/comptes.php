@@ -29,7 +29,7 @@ if (!empty($_POST) && isset($_POST["ajouter_compte"]))
 
         if (is_privileged() == false)
         {
-            die("Echec de l'ajout du compte : vous n'avez pas les droits requis");
+            die("Erreur : échec de l'ajout du compte, vous n'avez pas les droits requis");
         }
 
         verifier("identifiant", $user);

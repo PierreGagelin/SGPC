@@ -395,17 +395,13 @@ function verifier($colonne, $valeur)
 }
 
 // Add a new SGPC member and return its identifier
-function sgpc_member_add($lastname, $firstname, $region_name)
+function sgpc_member_add($lastname, $firstname, $region)
 {
-    verifier("prenom", $firstname);
     verifier("nom", $lastname);
-    verifier("region", $region_name);
+    verifier("prenom", $firstname);
+    verifier("region", $region);
 
-    $numero_adherent = member_add();
-
-    member_update($numero_adherent, "prenom", $firstname);
-    member_update($numero_adherent, "nom", $lastname);
-    member_update($numero_adherent, "region", $region_name);
+    $numero_adherent = member_add($lastname, $firstname, $region);
 
     return $numero_adherent;
 }
@@ -440,10 +436,10 @@ function supprimer_colonne($col)
         return;
     }
 
-    $id_list = member_get_list();
-    foreach($id_list as $id)
+    $member_list = member_get_list();
+    foreach($member_list as $member)
     {
-        member_attr_del($id, $col);
+        member_attr_del($member["numero_adherent"], $col);
     }
 }
 
@@ -463,18 +459,16 @@ function copier_colonne($col1, $col2)
         return;
     }
 
-    $id_list = member_get_list();
-    foreach ($id_list as $id)
+    $member_list = member_get_list();
+    foreach ($member_list as $member)
     {
-        $member = member_get($id);
-
         if (array_key_exists($col1, $member) == true)
         {
-            member_update($id, $col2, $member[$col1]);
+            member_update($member["numero_adherent"], $col2, $member[$col1]);
         }
         else
         {
-            member_attr_del($id, $col2);
+            member_attr_del($member["numero_adherent"], $col2);
         }
     }
 }

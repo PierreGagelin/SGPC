@@ -30,12 +30,12 @@ function authentification($user, $password)
     $account = account_get($user);
     if (empty($account) == true)
     {
-        echo "Echec de l'authentification : utilisateur inconnu [identifiant=$user]<br />";
+        echo "Erreur : utilisateur inconnu identifiant=$user<br />";
         return;
     }
     if ($account["password"] != $password)
     {
-        echo "Echec de l'authentification : mot de passe erroné<br />";
+        echo "Erreur : mot de passe erroné<br />";
         return;
     }
 
@@ -51,7 +51,7 @@ if ((empty($_POST) == false) && (array_key_exists('connexion', $_POST) == true))
 {
     if (!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe']))
     {
-        echo "Vous avez oublié l'identifiant ou le mot de passe !<br />";
+        echo "Erreur : identifiant ou mot de passe vide<br />";
     }
     else
     {

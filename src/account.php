@@ -15,7 +15,7 @@ function account_add($user, $password, $region)
 
     if ($rep != true)
     {
-        die("Failed to add account user=$user");
+        die("Erreur : échec de l'ajout du compte identifiant=$user");
     }
 }
 
@@ -28,7 +28,7 @@ function account_del($user)
 
     if ($rep != true)
     {
-        die("Failed to delete account user=$user");
+        die("Erreur : échec de la suppression du compte identifiant=$user");
     }
 }
 
@@ -41,13 +41,11 @@ function account_get($user)
     $rep->close();
     db_close($db);
 
-    if (($account == null) || ($account == false))
+    if ($account != null)
     {
-        die("Failed to get account: user does not exist user=$user");
+        # Fix privilege type
+        $account["privileged"] = ($account["privileged"] == 1) ? true : false;
     }
-
-    # Fix privilege type
-    $account["privileged"] = ($account["privileged"] == 1) ? true : false;
 
     return $account;
 }

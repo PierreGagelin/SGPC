@@ -36,7 +36,7 @@ if (!empty($_POST) && isset($_POST['ajouter']))
             (empty($_POST["nom"]) == true) ||
             (empty($_POST["region"]) == true))
     {
-        die("Echec de l'ajout de l'adhérent: les champs nom, prenom et region sont requis");
+        die("Erreur : échec de l'ajout de l'adhérent, les champs 'nom', 'prenom' et 'region' sont requis");
     }
     else
     {

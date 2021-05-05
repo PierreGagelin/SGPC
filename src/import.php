@@ -99,7 +99,7 @@ function parse_excel($worksheet)
         $nom = "$nom";
         $prenom = "$prenom";
 
-        echo "Traitement d'une ligne [index=$ligne ; adherent=$num_ad ; nom=$nom ; prenom=$prenom]<br />";
+        echo "Traitement de la ligne index=$ligne adherent=$num_ad nom=$nom prenom=$prenom<br />";
 
         if (empty($num_ad) == true)
         {
@@ -118,14 +118,12 @@ function parse_excel($worksheet)
                 continue;
             }
 
-            echo "- Vérification de la valeur [column=$clef ; value=$valeur]<br />";
+            echo "- Vérification de la valeur column=$clef value=$valeur<br />";
             verifier($clef, $valeur);
 
-            member_update($num_ad, $clef, $valeur, false);
+            member_update($num_ad, $clef, $valeur);
         }
     }
-
-    member_store();
 
     echo "Fin de l'import du fichier Excel<br />";
 }
@@ -135,14 +133,14 @@ if (empty($_FILES) == false)
 {
     if ((isset($_FILES['fichier_excel']) == false) || ($_FILES['fichier_excel']['error'] > 0))
     {
-        die("Erreur lors de l'upload du fichier Excel<br />");
+        die("Erreur : échec de la télétransmission du fichier Excel<br />");
     }
 
     // Check extension
     $extension = substr(strrchr($_FILES['fichier_excel']['name'], '.'), 1);
     if ($extension != "xlsx")
     {
-        die("Erreur : le fichier n'est pas au format .xlsx !<br />");
+        die("Erreur : le fichier n'est pas au format .xlsx <br />");
     }
 
     // Move the file to national folder

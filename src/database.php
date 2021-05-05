@@ -11,14 +11,14 @@ function db_init()
     $json = file_get_contents($DB_CONFIG_FILE);
     if ($json == false)
     {
-        die("Failed to read file=$DB_CONFIG_FILE");
+        die("Erreur : échec de la lecture du fichier des paramètres de connexion");
     }
 
     // Decode as an associative array
     $DB_CONFIG = json_decode($json, true);
     if ($DB_CONFIG == null)
     {
-        die("Failed to decode JSON string=$json");
+        die("Erreur : échec du décodage JSON des paramètres de connexion");
     }
 }
 
@@ -30,12 +30,12 @@ function db_open()
 
     if ($db->connect_errno != 0)
     {
-        die("Failed to connect to mysql errno=$db->connect_errno error=$db->connect_error");
+        die("Erreur : échec de la connexion MySQL erreur_numéro=$db->connect_errno erreur_message=$db->connect_error");
     }
 
     if ($db->set_charset("utf8") == false)
     {
-        die("Failed to set charset to UTF-8");
+        die("Erreur : impossible d'utiliser l'encodage UTF-8");
     }
 
     return $db;
@@ -51,46 +51,12 @@ function db_query($db, $req)
     $rep = $db->query($req);
     if ($rep == false)
     {
-        echo "Failed to execute request errno=$db->errno error=$db->error <br />";
+        echo "Erreur : échec de l'exécution de la requête erreur_numéro=$db->errno erreur_message=$db->error requête=$req <br />";
     }
 
     return $rep;
 }
 
 db_init();
-
-//
-// Code samples
-//
-
-// $db = db_open();
-// $keys = array_keys($MEMBER_ARRAY);
-// foreach ($keys as $key)
-// {
-//     $member = $MEMBER_ARRAY[$key];
-
-//     $numero_adherent = $member["numero_adherent"];
-//     $region = $member["region"];
-//     $nom = $member["nom"];
-//     $prenom = $member["prenom"];
-//     $info = json_encode($member);
-
-//     $req = "";
-//     $req .= "INSERT INTO members (numero_adherent, region, nom, prenom, info) ";
-//     $req .= "VALUES ('$numero_adherent', '$region', '$nom', '$prenom', '$info')";
-
-//     db_query($db, $req);
-// }
-// db_close($db);
-
-// $db = db_open();
-// $req = "SELECT * FROM members ORDER BY numero_adherent DESC";
-// $rep = db_query($db, $req);
-// $members = $rep->fetch_all(MYSQLI_ASSOC);
-// foreach ($members as $member)
-// {
-//     $MEMBER_ARRAY[$member["numero_adherent"]] = $member;
-// }
-// db_close($db);
 
 ?>

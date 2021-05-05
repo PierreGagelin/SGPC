@@ -119,11 +119,9 @@ function afficher_liste_adherents($page, $type)
     $entry .= "<div class='section'>";
     $entry .= "<h2>Liste des adhérents</h2>";
 
-    $id_list = member_get_list();
-    foreach ($id_list as $id)
+    $member_list = member_get_list();
+    foreach ($member_list as $member)
     {
-        $member = member_get($id);
-
         // Skip member that don't belong to the region
         if (($member['region'] != $_SESSION['region']) && (is_privileged() == false))
         {

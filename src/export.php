@@ -39,11 +39,9 @@ foreach($colonnes as $colonne)
 $xls_lig++;
 
 // Fill each line with a member
-$id_list = member_get_list();
-foreach($id_list as $id)
+$member_list = member_get_list();
+foreach($member_list as $member)
 {
-    $member = member_get($id);
-
     // Skip member that don't belong to the region
     if (($member['region'] != $_SESSION['region']) && (is_privileged() == false))
     {
