@@ -9,7 +9,7 @@ ini_set('display_startup_errors', true);
 require_once("donnees.php");
 require_once('vue.php');
 
-if (is_priviledged() == false)
+if (is_privileged() == false)
 {
     header('Location: index.php');
     exit();

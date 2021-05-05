@@ -158,7 +158,7 @@ function mail_supprimer_colonne($numero_adherent, $colonne, $message, $adherent_
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
-    $session_identifiant = $_SESSION["identifiant"];
+    $session_identifiant = $_SESSION["user"];
 
     $message_html = "";
     $message_html .= "<html><head></head><body>";
@@ -196,7 +196,7 @@ function mail_creer_adherent($numero_adherent, $message)
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
-    $session_identifiant = $_SESSION["identifiant"];
+    $session_identifiant = $_SESSION["user"];
 
     $message_html = "";
     $message_html .= "<html><head></head><body>";
@@ -234,7 +234,7 @@ function mail_modifier_adherent($modifications, $message, $adherent_legacy)
 
     $frontieres = generer_frontiere();
     $session_region = $_SESSION["region"];
-    $session_identifiant = $_SESSION["identifiant"];
+    $session_identifiant = $_SESSION["user"];
 
     $message_html = "";
     $message_html .= "<html><head></head><body>" .

@@ -35,7 +35,7 @@ function db_open()
 
     if ($db->set_charset("utf8") == false)
     {
-        die("Failed to load UTF-8");
+        die("Failed to set charset to UTF-8");
     }
 
     return $db;
@@ -57,34 +57,11 @@ function db_query($db, $req)
     return $rep;
 }
 
-function db_create_members()
-{
-    $db = db_open();
-
-    $req = "";
-    $req .= "CREATE TABLE members (";
-    $req .= "numero_adherent VARCHAR(7)";
-    $req .= ", region VARCHAR(255)";
-    $req .= ", nom VARCHAR(255)";
-    $req .= ", prenom VARCHAR(255)";
-    $req .= ", info VARCHAR(16383)";
-    $req .= ")";
-
-    db_query($db, $req);
-
-    $req = "ALTER TABLE members ADD PRIMARY KEY (numero_adherent)";
-    db_query($db, $req);
-
-    db_close($db);
-}
-
 db_init();
 
 //
 // Code samples
 //
-
-// db_create_members();
 
 // $db = db_open();
 // $keys = array_keys($MEMBER_ARRAY);

@@ -27,17 +27,21 @@ if (is_connected() == true)
 //
 function authentification($user, $password)
 {
-    global $ACCOUNT_ARRAY;
-
-    if (account_password_exist($user, $password) == false)
+    $account = account_get($user);
+    if (empty($account) == true)
     {
         echo "Echec de l'authentification : utilisateur inconnu [identifiant=$user]<br />";
         return;
     }
+    if ($account["password"] != $password)
+    {
+        echo "Echec de l'authentification : mot de passe erroné<br />";
+        return;
+    }
 
-    $_SESSION["identifiant"] = $user;
-    $_SESSION["region"] = $ACCOUNT_ARRAY[$user]["region"];
-    $_SESSION["priviledged"] = $ACCOUNT_ARRAY[$user]["priviledged"];
+    $_SESSION["user"] = $account["user"];
+    $_SESSION["region"] = $account["region"];
+    $_SESSION["privileged"] = $account["privileged"];
 
     header('Location: liste_adherents.php');
     exit();

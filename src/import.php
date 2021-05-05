@@ -11,7 +11,7 @@ require_once("member.php");
 require_once("vue.php");
 require_once('vendor/autoload.php');
 
-if (is_priviledged() == false)
+if (is_privileged() == false)
 {
     header('Location: index.php');
     exit();

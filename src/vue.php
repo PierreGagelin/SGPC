@@ -60,7 +60,7 @@ function afficher_navigation()
     $nav .= '<input type="submit" value="Ajouter un adhérent">';
     $nav .= '</form>';
 
-    if (is_priviledged() == true)
+    if (is_privileged() == true)
     {
         $nav .= '<form action="import.php" method="get">';
         $nav .= '<input type="submit" value="Import d\'un fichier Excel">';
@@ -71,7 +71,7 @@ function afficher_navigation()
     $nav .= '<input type="submit" value="Exporter au format Excel">';
     $nav .= '</form>';
 
-    if (is_priviledged() == true)
+    if (is_privileged() == true)
     {
         $nav .= '<form action="national.php" method="get">';
         $nav .= '<input type="submit" value="Gestion nationale">';
@@ -125,7 +125,7 @@ function afficher_liste_adherents($page, $type)
         $member = member_get($id);
 
         // Skip member that don't belong to the region
-        if (($member['region'] != $_SESSION['region']) && (is_priviledged() == false))
+        if (($member['region'] != $_SESSION['region']) && (is_privileged() == false))
         {
             continue;
         }
@@ -218,16 +218,14 @@ function afficher_transition_annuelle()
 // Afficher la liste des comptes
 function afficher_liste_comptes()
 {
-    $user_list = account_get_list();
+    $account_list = account_get_list();
 
     $entry = "";
     $entry .= "<div class='section'>";
     $entry .= "<h2>Liste des comptes</h2>";
 
-    foreach($user_list as $user)
+    foreach($account_list as $account)
     {
-        $account = account_get($user);
-
         $entry .= "region : {$account['region']}<br />";
         $entry .= "identifiant : {$account['user']}<br />";
         $entry .= "mot de passe : {$account['password']}<br /><br />";

@@ -40,11 +40,17 @@ function docker_build()
 function docker_run()
 {
     local dir_src=
+    local dir_build=
     local opt_list=()
 
-    # Get sources directory
+    # Get directories
     dir_src=$(dirname "${BASH_SOURCE[0]}")
     dir_src=$(readlink -e "${dir_src}/src")
+
+    dir_build=$(dirname "${BASH_SOURCE[0]}")
+    dir_build=$(readlink -m "${dir_build}/../build/sgpc")
+
+    mkdir -p "${dir_build}"
 
     opt_list+=("--interactive")
     opt_list+=("--tty")
@@ -55,6 +61,7 @@ function docker_run()
     opt_list+=("--mount" "type=bind,src=/etc/timezone,dst=/etc/timezone")
     opt_list+=("--mount" "type=bind,src=/etc/localtime,dst=/etc/localtime")
     opt_list+=("--mount" "type=bind,src=${dir_src},dst=/workspace/src")
+    opt_list+=("--mount" "type=bind,src=${dir_build},dst=/var/www/html")
     opt_list+=("--publish" "80:80")
 
     # Allow X usage to any user
@@ -66,10 +73,6 @@ function docker_run()
 # Prepare workspace for SGPC
 function sgpc_workspace()
 {
-    # Clean HTML folder
-    docker container exec sgpc rm -rf /var/www/html
-    docker container exec sgpc mkdir /var/www/html
-
     # Get PhpSpreadsheet library up
     docker container exec sgpc composer require --working-dir=/var/www/html phpoffice/phpspreadsheet
 
@@ -84,6 +87,100 @@ function sgpc_workspace()
 
     # Reset rights
     docker container exec sgpc chown -R www-data:www-data /var/www/html
+}
+
+# Create database and tables
+function sgpc_database()
+{
+    local sql_cmd=
+
+    # Create SGPC database
+    docker container exec sgpc mysql -u root -e "CREATE DATABASE sgpc;"
+
+    # Create account table
+    sql_cmd="USE sgpc;"
+    sql_cmd="${sql_cmd} CREATE TABLE account ("
+    sql_cmd="${sql_cmd} user varchar(200) NOT NULL PRIMARY KEY,"
+    sql_cmd="${sql_cmd} password varchar(200) NOT NULL,"
+    sql_cmd="${sql_cmd} region varchar(200),"
+    sql_cmd="${sql_cmd} privileged int NOT NULL"
+    sql_cmd="${sql_cmd} );"
+    docker container exec sgpc mysql -u root -e "${sql_cmd}"
+
+    # Create member table
+    sql_cmd="USE sgpc;"
+    sql_cmd="${sql_cmd} CREATE TABLE member ("
+    sql_cmd="${sql_cmd} numero_adherent varchar(5) NOT NULL PRIMARY KEY,"
+    sql_cmd="${sql_cmd} nom varchar(200) NOT NULL,"
+    sql_cmd="${sql_cmd} prenom varchar(200) NOT NULL,"
+    sql_cmd="${sql_cmd} cotis_payee varchar(3),"
+    sql_cmd="${sql_cmd} date_paiement varchar(10),"
+    sql_cmd="${sql_cmd} p_ou_rien varchar(1),"
+    sql_cmd="${sql_cmd} adhesion varchar(3),"
+    sql_cmd="${sql_cmd} adresse_1 varchar(200),"
+    sql_cmd="${sql_cmd} adresse_2 varchar(200),"
+    sql_cmd="${sql_cmd} code_postal varchar(200),"
+    sql_cmd="${sql_cmd} commune varchar(200),"
+    sql_cmd="${sql_cmd} ad varchar(6),"
+    sql_cmd="${sql_cmd} profession varchar(5),"
+    sql_cmd="${sql_cmd} region varchar(18),"
+    sql_cmd="${sql_cmd} echelon varchar(200),"
+    sql_cmd="${sql_cmd} bureau_nat varchar(1),"
+    sql_cmd="${sql_cmd} comite_nat varchar(1),"
+    sql_cmd="${sql_cmd} tel_port varchar(10),"
+    sql_cmd="${sql_cmd} tel_prof varchar(10),"
+    sql_cmd="${sql_cmd} tel_dom varchar(10),"
+    sql_cmd="${sql_cmd} fonc_nat varchar(3),"
+    sql_cmd="${sql_cmd} fonc_nat_irp varchar(6),"
+    sql_cmd="${sql_cmd} fonc_reg varchar(2),"
+    sql_cmd="${sql_cmd} fonc_reg_irp varchar(6),"
+    sql_cmd="${sql_cmd} mail_priv varchar(200),"
+    sql_cmd="${sql_cmd} mail_prof varchar(200),"
+    sql_cmd="${sql_cmd} remarque_r varchar(200),"
+    sql_cmd="${sql_cmd} remarque_n varchar(200),"
+    sql_cmd="${sql_cmd} chsc_pc_r varchar(2),"
+    sql_cmd="${sql_cmd} chsc_pc_n varchar(2),"
+    sql_cmd="${sql_cmd} com_bud varchar(1),"
+    sql_cmd="${sql_cmd} com_com varchar(1),"
+    sql_cmd="${sql_cmd} com_cond varchar(1),"
+    sql_cmd="${sql_cmd} com_ce varchar(1),"
+    sql_cmd="${sql_cmd} com_dent varchar(1),"
+    sql_cmd="${sql_cmd} com_ffass varchar(1),"
+    sql_cmd="${sql_cmd} com_pharma varchar(1),"
+    sql_cmd="${sql_cmd} com_ret varchar(1),"
+    sql_cmd="${sql_cmd} naissance varchar(10),"
+    sql_cmd="${sql_cmd} entree varchar(10),"
+    sql_cmd="${sql_cmd} abcd varchar(1),"
+    sql_cmd="${sql_cmd} c1 varchar(200),"
+    sql_cmd="${sql_cmd} c2 varchar(200),"
+    sql_cmd="${sql_cmd} c3 varchar(200),"
+    sql_cmd="${sql_cmd} c4 varchar(200),"
+    sql_cmd="${sql_cmd} c5 varchar(200),"
+    sql_cmd="${sql_cmd} c6 varchar(200),"
+    sql_cmd="${sql_cmd} c7 varchar(200),"
+    sql_cmd="${sql_cmd} c8 varchar(200),"
+    sql_cmd="${sql_cmd} c9 varchar(200)"
+    sql_cmd="${sql_cmd} );"
+    docker container exec sgpc mysql -u root -e "${sql_cmd}"
+
+    # Add accounts
+    sql_cmd="USE sgpc;"
+    sql_cmd="${sql_cmd} INSERT INTO account VALUES ('root', 'root', 'National', 1);"
+    sql_cmd="${sql_cmd} INSERT INTO account VALUES ('user', 'user', 'Auvergne', 0);"
+    docker container exec sgpc mysql -u root -e "${sql_cmd}"
+
+    # Add members
+    sql_cmd="USE sgpc;"
+    sql_cmd="${sql_cmd} INSERT INTO member(numero_adherent, nom, prenom, region) VALUES ('AA001', 'SURLALUNE', 'Toto', 'Ile-de-France');"
+    sql_cmd="${sql_cmd} INSERT INTO member(numero_adherent, nom, prenom, region) VALUES ('AA002', 'DANSTONCUL', 'Lulu', 'Auvergne');"
+    docker container exec sgpc mysql -u root -e "${sql_cmd}"
+
+    # Create SQL user
+    sql_cmd=
+    sql_cmd="${sql_cmd} CREATE USER 'sgpc'@'localhost' IDENTIFIED BY 'sgpcp';"
+    sql_cmd="${sql_cmd} GRANT ALL PRIVILEGES ON *.* TO 'sgpc'@'localhost';"
+    sql_cmd="${sql_cmd} FLUSH PRIVILEGES;"
+    docker container exec sgpc mysql -u root -e "${sql_cmd}"
 }
 
 # Build container image
@@ -102,3 +199,6 @@ docker container exec sgpc service mysql start
 
 # Prepare workspace
 sgpc_workspace
+
+# Initialize database
+sgpc_database

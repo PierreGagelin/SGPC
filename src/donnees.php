@@ -4,7 +4,7 @@ require_once("member.php");
 
 // tableau de toutes les colonnes
 $colonnes = array(
-    'numero_adherent',
+    "numero_adherent",
     "nom",
     "prenom",
     "cotis_payee",
@@ -64,7 +64,7 @@ function is_connected()
         return false;
     }
 
-    if (array_key_exists("identifiant", $_SESSION) == false)
+    if (array_key_exists("user", $_SESSION) == false)
     {
         return false;
     }
@@ -74,7 +74,7 @@ function is_connected()
         return false;
     }
 
-    if (array_key_exists("priviledged", $_SESSION) == false)
+    if (array_key_exists("privileged", $_SESSION) == false)
     {
         return false;
     }
@@ -83,14 +83,14 @@ function is_connected()
 }
 
 // Tell if the session has root priviledges
-function is_priviledged()
+function is_privileged()
 {
     if (is_connected() == false)
     {
         return false;
     }
 
-    return $_SESSION["priviledged"];
+    return $_SESSION["privileged"];
 }
 
 // tableau qui permet les vérifications
@@ -430,7 +430,7 @@ function supprimer_colonne($col)
 {
     global $colonnes;
 
-    if (is_priviledged() == false)
+    if (is_privileged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
     }
@@ -453,7 +453,7 @@ function copier_colonne($col1, $col2)
 {
     global $colonnes;
 
-    if (is_priviledged() == false)
+    if (is_privileged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
     }
@@ -486,7 +486,7 @@ function copier_colonne($col1, $col2)
 //     - suppression de la colonne "cotis_payee"
 function basculer_cotisations()
 {
-    if (is_priviledged() == false)
+    if (is_privileged() == false)
     {
         die("Erreur : vous n'avez pas le droit de faire cette opération !");
     }

@@ -10,7 +10,7 @@ require_once('account.php');
 require_once('donnees.php');
 require_once('vue.php');
 
-if (is_priviledged() == false)
+if (is_privileged() == false)
 {
     header('Location: index.php');
     exit();
@@ -27,7 +27,7 @@ if (!empty($_POST) && isset($_POST["ajouter_compte"]))
         $password = $_POST["mot_de_passe"];
         $region_name = $_POST["region"];
 
-        if (is_priviledged() == false)
+        if (is_privileged() == false)
         {
             die("Echec de l'ajout du compte : vous n'avez pas les droits requis");
         }
