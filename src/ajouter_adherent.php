@@ -1,129 +1,96 @@
 <?php
 
-session_start();
+require_once "donnees.php";
+require_once "vue.php";
+require_once "mail.php";
 
 error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('display_startup_errors', true);
+ini_set("display_errors", true);
+ini_set("display_startup_errors", true);
 
-require_once('donnees.php');
-require_once('vue.php');
-require_once("mail.php");
+session_start();
 
 if (is_connected() == false)
 {
-    header('Location: index.php');
+    header("Location: index.php");
     exit();
 }
 
-// suppression d'une colonne spécifique pour l'adhérent
-if (!empty($_POST) && isset($_POST['supprimer_ligne']) && isset($_POST['numero_adherent']) && isset($_POST['colonne']))
+// Delete a specific column for a member
+if ((empty($_POST) == false) && (isset($_POST["supprimer_ligne"]) == true))
 {
-    $numero_adherent = $_POST['numero_adherent'];
-    $colonne = $_POST['colonne'];
+    if ((isset($_POST["numero_adherent"]) == true) &&
+        (isset($_POST["colonne"]) == true))
+    {
+        $adherent_legacy = member_get($_POST["numero_adherent"]);
+        member_attr_del($_POST["numero_adherent"], $_POST["colonne"]);
 
-    $adherent_legacy = member_get($numero_adherent);
-    member_attr_del($numero_adherent, $colonne);
+        // Send an email to notify deletion
+        $email_message = "";
+        $email_message .= "<p>Message provenant de 'ajouter_adherent.php' : </p>";
+        $email_message .= "<p>Suppression d'une colonne pour un adhérent</p>";
+        email_delete_column($_POST["numero_adherent"], $_POST["colonne"], $email_message, $adherent_legacy);
 
-    // envoi d'un mail pour prévenir de la suppression
-    $mail_message = "";
-    $mail_message .= "<p>Message provenant de 'ajouter_adherent.php' : </p>";
-    $mail_message .= "<p>Suppression d'une colonne pour un adhérent</p>";
-    mail_supprimer_colonne($numero_adherent, $colonne, $mail_message, $adherent_legacy);
+        unset($adherent_legacy);
+        unset($email_message);
+    }
 }
 
-afficher_header("Ajout ou modification d'adhérent");
-afficher_navigation();
+display_header("Information adhérent");
+display_navigation();
 
-?>
+$page = "";
 
-<div class="section">
-<h2>Ajout ou modification d'un adhérent</h2>
-<p>
-    Pour ajouter ou modifier un adhérent il suffit de remplir les informations
-    dans le formulaire ci dessous :
-</p>
-
-<?php
-
-// si le numéro d'adhérent transite, on récupère les informations de l'adhérent
-// en fonction des données présentes dans la base
-if (!empty($_POST) && isset($_POST['numero_adherent']))
+// Display a section to add or modify a member
+$page .= "<div class='section'>";
+if ((empty($_POST) == false) && (isset($_POST['afficher']) == true) && (isset($_POST['numero_adherent']) == true))
 {
-    $numero_adherent = $_POST['numero_adherent'];
-    $adherent = member_get($numero_adherent);
-}
-
-// formulaire d'informations
-$formulaire = '<form action="liste_adherents.php" method="post">';
-
-// on vérifie s'il s'agit d'un ajout ou d'un affichage
-//   - pour un ajout on pose un marqueur distinctif pour savoir qu'on ajoute
-//   - sinon on ajoute aussi le numéro d'adhérent pour les modifications
-if (!empty($_POST) && isset($_POST['afficher']))
-{
-    $formulaire .= "<input type='hidden' name='numero_adherent' value='$numero_adherent'>";
-    $formulaire .= '<input type="hidden" name="modifier">';
+    $page .= "<h1>Modification d'un adhérent</h1>";
+    $page .= "<p>Renseignez le formulaire ci-dessous pour modifier les informations de l'adhérent</p>";
+    $page .= "<form action='liste_adherents.php' method='post'>";
+    $page .= "<input type='hidden' name='numero_adherent' value='{$_POST['numero_adherent']}'>";
+    $page .= "<input type='hidden' name='modifier'>";
     $type = "Modifier";
+    $adherent = member_get($_POST['numero_adherent']);
 }
 else
 {
-    $formulaire .= '<input type="hidden" name="ajouter">';
+    $page .= "<h1>Ajout d'un adhérent</h1>";
+    $page .= "<p>Renseignez le formulaire ci-dessous pour ajouter un nouvel adhérent</p>";
+    $page .= "<form action='liste_adherents.php' method='post'>";
+    $page .= "<input type='hidden' name='ajouter'>";
     $type = "Ajouter";
+    $adherent = array();
 }
-
-// Fill the member form
+$page .= "<table><tr><th>Colonne</th><th>Valeur</th><th>Nouvelle valeur</th></tr>";
 foreach($colonnes as $colonne)
 {
-    if (isset($vue[$colonne]))
+    $page .= "<tr><td>$colonne</td>";
+
+    if (isset($adherent[$colonne]))
     {
-        $ligne = "$colonne : ";
-
-        if (isset($adherent[$colonne]))
-        {
-            // Add the current value associated to this entry
-            $ligne .= "({$adherent[$colonne]})";
-        }
-
-        $ligne .= $vue[$colonne];
-
-        $formulaire .= $ligne;
+        $page .= "<td>{$adherent[$colonne]}</td>";
     }
+    else
+    {
+        $page .= "<td></td>";
+    }
+
+    $page .= "<td>{$vue[$colonne]}</td></tr>";
 }
+$page .= "</table>";
+$page .= "<input type='submit' value='$type'>";
+$page .= "</form>";
+$page .= "</div>";
 
-$formulaire .= "<input type='submit' value='$type'>";
-$formulaire .= "</form>";
-$formulaire .= "</div>";
-
-echo $formulaire;
-
-//
-// Section pour supprimer des informations spécifiques à l'adhérent
-//
-
-// génération du HTML de la section
-//   - visiblement seulement pour une modification avec numéro adhérent connu
-//   - chaque ligne est un formulaire permettant de supprimer la dite ligne
-//   - contient aussi de quoi recharger le reste de la page
-if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
+// Display a section to delete member information
+if (($type == "Modifier") && (empty($_POST) == false) && (isset($_POST["numero_adherent"]) == true))
 {
-    $numero_adherent = $_POST['numero_adherent'];
+    $page .= "<div class='section'>";
+    $page .= "<h1>Suppression d'informations</h1>";
+    $page .= "<p>Utilisez cette section pour supprimer des informations spécifiques à l'adhérent</p>";
 
-    $section_supprimer = "";
-    $section_supprimer .= "<div class='section'>";
-    $section_supprimer .= "<h2>Suppression d'informations</h2>";
-    $section_supprimer .= "<p>Ici, vous pouvez supprimer des valeurs spécifiques à l'adhérent</p>";
-
-    $input_afficher = "<input type='hidden' name='afficher'>";
-
-    foreach($colonnes as $colonne)
-    {
-        if (($colonne != "numero_adherent") && isset($_POST[$colonne]))
-        {
-            $valeur = $_POST[$colonne];
-            $input_afficher .= "<input type='hidden' name='$colonne' value='$valeur'>";
-        }
-    }
+    $page .= "<table><tr><th>Colonne</th><th>Valeur</th><th>Action</th></tr>";
     foreach($colonnes as $colonne)
     {
         if (($colonne != "numero_adherent") &&
@@ -133,23 +100,21 @@ if ($type == "Modifier" && !empty($_POST) && isset($_POST['numero_adherent']))
             (array_key_exists($colonne, $adherent) == true) &&
             (empty($adherent[$colonne]) == false))
         {
-            $formulaire = "";
-            $formulaire .= "<form action='ajouter_adherent.php' method='post'>";
-            $formulaire .= "<input type='submit' value='Supprimer'>";
-            $formulaire .= "$input_afficher";
-            $formulaire .= "<input type='hidden' name='supprimer_ligne'>";
-            $formulaire .= "<input type='hidden' name='numero_adherent' value='$numero_adherent'>";
-            $formulaire .= "<input type='hidden' name='colonne' value='$colonne'>";
-            $formulaire .= "$colonne : {$adherent[$colonne]}";
-            $formulaire .= "</form>";
-
-            $section_supprimer .= $formulaire;
+            $page .= "<tr><td>$colonne</td><td>{$adherent[$colonne]}</td>";
+            $page .= "<td><form action='ajouter_adherent.php' method='post'>";
+            $page .= "<input type='submit' value='Supprimer'>";
+            $page .= "<input type='hidden' name='afficher'>";
+            $page .= "<input type='hidden' name='supprimer_ligne'>";
+            $page .= "<input type='hidden' name='numero_adherent' value='{$_POST["numero_adherent"]}'>";
+            $page .= "<input type='hidden' name='colonne' value='$colonne'>";
+            $page .= "</form>";
         }
     }
-    $section_supprimer .= "</div>";
-    echo $section_supprimer;
+    $page .= "</div>";
 }
 
-afficher_footer()
+echo $page;
+
+display_footer()
 
 ?>

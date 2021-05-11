@@ -4,7 +4,7 @@
 // Library for member management
 //
 
-require_once("database.php");
+require_once "database.php";
 
 function member_add($lastname, $firstname, $region)
 {
@@ -110,7 +110,7 @@ function member_get($id)
 function member_get_list()
 {
     $db = db_open();
-    $rep = db_query($db, "SELECT * FROM member;");
+    $rep = db_query($db, "SELECT * FROM member ORDER BY numero_adherent DESC;");
     $member_list = $rep->fetch_all(MYSQLI_ASSOC);
     $rep->close();
     db_close($db);

@@ -1,41 +1,39 @@
 <?php
 
-session_start();
+require_once "account.php";
+require_once "donnees.php";
+require_once "vue.php";
 
 error_reporting(E_ALL);
-ini_set('display_errors', true);
-ini_set('display_startup_errors', true);
+ini_set("display_errors", true);
+ini_set("display_startup_errors", true);
 
-require_once("account.php");
-require_once("donnees.php");
-require_once("vue.php");
+session_start();
 
-// Handle disconnection
-if (!empty($_POST) && isset($_POST['deconnexion']))
+// Disconnect the session
+if ((empty($_POST) == false) && (isset($_POST["deconnexion"]) == true))
 {
     $_SESSION = array();
 }
 
 if (is_connected() == true)
 {
-    header('Location: liste_adherents.php');
+    header("Location: liste_adherents.php");
     exit();
 }
 
-//
-// Authenticate the user's session
-//
-function authentification($user, $password)
+// Authenticate the session
+function authenticate($user, $password)
 {
     $account = account_get($user);
     if (empty($account) == true)
     {
-        echo "Erreur : utilisateur inconnu identifiant=$user<br />";
+        echo "<p>Erreur : utilisateur inconnu identifiant=$user</p>";
         return;
     }
     if ($account["password"] != $password)
     {
-        echo "Erreur : mot de passe erroné<br />";
+        echo "<p>Erreur : mot de passe erroné</p>";
         return;
     }
 
@@ -43,43 +41,39 @@ function authentification($user, $password)
     $_SESSION["region"] = $account["region"];
     $_SESSION["privileged"] = $account["privileged"];
 
-    header('Location: liste_adherents.php');
+    header("Location: liste_adherents.php");
     exit();
 }
 
-if ((empty($_POST) == false) && (array_key_exists('connexion', $_POST) == true))
+if ((empty($_POST) == false) && (array_key_exists("connexion", $_POST) == true))
 {
-    if (!isset($_POST['identifiant']) || !isset($_POST['mot_de_passe']))
+    if ((isset($_POST["identifiant"]) == false) || (isset($_POST["mot_de_passe"]) == false))
     {
-        echo "Erreur : identifiant ou mot de passe vide<br />";
+        echo "<p>Erreur : identifiant ou mot de passe vide</p>";
     }
     else
     {
-        $user = $_POST['identifiant'];
-        $password = $_POST['mot_de_passe'];
-
-        authentification($user, $password);
+        authenticate($_POST["identifiant"], $_POST["mot_de_passe"]);
     }
 }
 
-afficher_header("Page d'accueil");
+display_header("Page d'accueil");
 
-?>
+$page = "";
 
-<div class="standalone">
-    <p>
-        Merci de vous connecter pour pouvoir continuer :
-    </p>
-    <form action="index.php" method="post">
-        Identifiant : <input type="text" name="identifiant"><br />
-        Mot de passe : <input type="password" name="mot_de_passe"><br />
-        <input type="hidden" name="connexion" value="useless">
-        <input type="submit" value="Connexion">
-    </form>
-</div>
+$page .= "<div class='section'>";
+$page .= "<h1>Connexion</h1>";
+$page .= "<form action='index.php' method='post'>";
+$page .= "<table>";
+$page .= "<tr><td>Identifiant</td><td><input type='text' name='identifiant'></td></tr>";
+$page .= "<tr><td>Mot de passe</td><td><input type='password' name='mot_de_passe'></td></tr>";
+$page .= "</table>";
+$page .= "<input type='hidden' name='connexion'>";
+$page .= "<input type='submit' value='Connexion'>";
+$page .= "</form>";
+$page .= "</div>";
+echo $page;
 
-<?php
-
-afficher_footer();
+display_footer();
 
 ?>

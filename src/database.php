@@ -51,7 +51,7 @@ function db_query($db, $req)
     $rep = $db->query($req);
     if ($rep == false)
     {
-        echo "Erreur : échec de l'exécution de la requête erreur_numéro=$db->errno erreur_message=$db->error requête=$req <br />";
+        echo "<p>Erreur : échec de l'exécution de la requête erreur_numéro=$db->errno erreur_message=$db->error requête=$req</p>";
     }
 
     return $rep;

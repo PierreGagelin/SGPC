@@ -4,7 +4,7 @@
 // Library for account management
 //
 
-require_once("database.php");
+require_once "database.php";
 
 // Add an account
 function account_add($user, $password, $region)

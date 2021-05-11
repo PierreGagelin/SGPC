@@ -1,8 +1,7 @@
 <?php
 
-require_once("member.php");
+require_once "member.php";
 
-// tableau de toutes les colonnes
 $colonnes = array(
     "numero_adherent",
     "nom",
@@ -56,114 +55,77 @@ $colonnes = array(
     "c9",
 );
 
-// Tell if the session is connected
-function is_connected()
-{
-    if (empty($_SESSION) == true)
-    {
-        return false;
-    }
-
-    if (array_key_exists("user", $_SESSION) == false)
-    {
-        return false;
-    }
-
-    if (array_key_exists("region", $_SESSION) == false)
-    {
-        return false;
-    }
-
-    if (array_key_exists("privileged", $_SESSION) == false)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-// Tell if the session has root priviledges
-function is_privileged()
-{
-    if (is_connected() == false)
-    {
-        return false;
-    }
-
-    return $_SESSION["privileged"];
-}
-
-// tableau qui permet les vérifications
-//   - contient une expression régulière
-//   - un message d'erreur si la regex ne match pas
 $verification = array(
     "numero_adherent" => array(
         "regex" => "#^[A-Z]{2}[0-9]{3}$#",
-        "erreur" => "Erreur : le numéro d'adhérent doit vérifier :<br />" .
-                    "- deux lettres majuscules suivies de 3 chiffres<br />"
+        "erreur" => "<p>Erreur : seules les entrées de la forme 'AB012' sont autorisées</p>"
     ),
     "nom" => array(
         "regex" => "#^[\\p{L}'. \\\-]+$#u",
-        "erreur" => "Erreur : sont autorisés les entrées contenant :<br />" .
-                    "- des lettres (majuscules, minuscules, accentuées)<br />" .
-                    "- des points<br />" .
-                    "- des espaces<br />" .
-                    "- des apostrophes<br />" .
-                    "- des tirets<br />"
+        "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
+                    "<ul>" .
+                    "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
+                    "<li>des points</li>" .
+                    "<li>des espaces</li>" .
+                    "<li>des apostrophes</li>" .
+                    "<li>des tirets</li>" .
+                    "</ul>"
     ),
     "code_postal" => array(
         "regex" => "#^[0-9]{5}$#",
-        "erreur" => "Erreur : vérification du code postal :<br />" .
-                    "Le code postal doit être composé de 5 chiffres<br />"
+        "erreur" => "<p>Erreur : seules les entrées de la forme '01234' sont autorisées</p>"
     ),
     "commune" => array(
         "regex" => "#^['A-Z\\\ -]+$#",
-        "erreur" => "Erreur : vérification de la commune :<br />" .
-                    "Sont autorisés :<br />" .
-                    "- des lettres de 'A' à 'Z'<br />" .
-                    "- des apostrophes<br />" .
-                    "- des espaces<br />" .
-                    "- des tirets<br />"
+        "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
+                    "<ul>" .
+                    "<li>des lettres de 'A' à 'Z'</li>" .
+                    "<li>des apostrophes</li>" .
+                    "<li>des espaces</li>" .
+                    "<li>des tirets</li>" .
+                    "</ul>"
     ),
     "date_paiement" => array(
         "regex" => "#^[0123][0-9]/[01][0-9]/[12][0-9]{3}$#",
-        "erreur" => "Erreur : la date n'est pas au format JJ/MM/AAAA<br />"
+        "erreur" => "<p>Erreur : seules les entrées de la forme 'JJ/MM/AAAA' sont autorisées</p>"
         ),
-        "tel_port" => array(
+    "tel_port" => array(
         "regex" => "#^0[1-9][0-9]{8}$#",
-        "erreur" => "Erreur : vérification du téléphone :<br />" .
-                    "Doit être de la forme 0[1-9]XXXXXXXX<br />"
+        "erreur" => "<p>Erreur : seules les entrées de la forme '0123456789' sont autorisées</p>"
     ),
     "mail_priv" => array(
         "regex" => "#^[a-z0-9_.-]+@[a-z0-9_.-]+\\.[a-z]+$#",
-        "erreur" => "Erreur : vérification du mail :<br />" .
-                    "Doit être de la forme XX@XX.Y avec :<br />" .
-                    "X étant :<br />" .
-                    "- des lettres de 'a' à 'z'<br />" .
-                    "- des chiffres<br />" .
-                    "- des underscores<br />" .
-                    "- des points<br />" .
-                    "- des tirets<br />" .
-                    "Y étant :<br />" .
-                    "- des lettres de 'a' à 'z'<br />"
+        "erreur" => "<p>Erreur : seules les entrées de la forme 'XX@XX.Y' sont autorisées</p>" .
+                    "<p>X acceptant les caractères ci-dessous</p>" .
+                    "<ul>" .
+                    "<li>des lettres de 'a' à 'z'</li>" .
+                    "<li>des chiffres</li>" .
+                    "<li>des underscores</li>" .
+                    "<li>des points</li>" .
+                    "<li>des tirets</li>" .
+                    "</ul>" .
+                    "<p>Y acceptant les caractères ci-dessous</p>" .
+                    "<ul>" .
+                    "<li>des lettres de 'a' à 'z'</li>" .
+                    "</ul>"
     ),
     "remarque_r" => array(
         "regex" => "#^[\\p{L}0-9\\\,_'. /-]+$#u",
-        "erreur" => "Erreur :<br />" .
-                    "Ne doit contenir que :<br />" .
-                    "- des lettres (majuscules, minuscules, accentuées)<br />" .
-                    "- des chiffres<br />" .
-                    "- des virgules<br />" .
-                    "- des espaces<br />" .
-                    "- des apostrophes<br />" .
-                    "- des underscores<br />" .
-                    "- des slashs<br />" .
-                    "- des points<br />" .
-                    "- des tirets<br />"
+        "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
+                    "<ul>" .
+                    "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
+                    "<li>des chiffres</li>" .
+                    "<li>des virgules</li>" .
+                    "<li>des espaces</li>" .
+                    "<li>des apostrophes</li>" .
+                    "<li>des underscores</li>" .
+                    "<li>des slashs</li>" .
+                    "<li>des points</li>" .
+                    "<li>des tirets</li>" .
+                    "</ul>"
     ),
 );
 
-// pour les entrées qui sont équivalentes
 $verification["adresse_1"] = $verification["remarque_r"];
 $verification["adresse_2"] = $verification["remarque_r"];
 $verification["prenom"] = $verification["nom"];
@@ -186,21 +148,6 @@ $verification["c9"] = $verification["remarque_r"];
 $verification["identifiant"] = $verification["remarque_r"];
 $verification["mot_de_passe"] = $verification["remarque_r"];
 
-
-// affiche un message d'erreur pour une entrée
-// telles que celle définie ci-après
-function erreur_verification($tableau)
-{
-    $erreur = "Erreur : les entrées autorisées sont :<br />";
-    foreach($tableau as $entree)
-    {
-        $erreur .= "- $entree<br />";
-    }
-    die($erreur);
-}
-
-// tableau des entrées possibles par colonne
-// pour les entrées statiquement définies (entre <select> HTML)
 $cotis_payee = array(
     "1",
     "2",
@@ -208,16 +155,20 @@ $cotis_payee = array(
     "1/2",
     "3/2",
 );
+
 $p_ou_rien = array(
     "p",
 );
+
 $adhesion = $cotis_payee;
+
 $ad = array(
     "AD",
     "AD-RSI",
     "AD-RT",
     "AD-ARS",
 );
+
 $profession = array(
     "MC",
     "CDC",
@@ -228,6 +179,7 @@ $profession = array(
     "MCRA",
     "MCR",
 );
+
 $region = array(
     "Aura",
     "Nouvelle-Aquitaine",
@@ -255,6 +207,7 @@ $region = array(
     "RSI",
     "TN",
 );
+
 $region_compte = array(
     "Aura",
     "Nouvelle-Aquitaine",
@@ -283,11 +236,14 @@ $region_compte = array(
     "TN",
     "National",
 );
+
 $bureau_nat = array(
     "1",
     "2",
 );
+
 $comite_nat = $bureau_nat;
+
 $fonc_nat = array(
     "PN",
     "SN",
@@ -298,6 +254,7 @@ $fonc_nat = array(
     "PH",
     "TH",
 );
+
 $fonc_nat_irp = array(
     "DS",
     "CCE-T",
@@ -306,6 +263,7 @@ $fonc_nat_irp = array(
     "CE-SEC",
     "CE-TR",
 );
+
 $fonc_reg = array(
     "P",
     "S",
@@ -316,6 +274,7 @@ $fonc_reg = array(
     "VP",
     "PH",
 );
+
 $fonc_reg_irp = array(
     "DS",
     "DP-T",
@@ -326,6 +285,7 @@ $fonc_reg_irp = array(
     "CE-SEC",
     "CE-TR",
 );
+
 $chsc_pc_r = array(
     "S",
     "T",
@@ -333,11 +293,14 @@ $chsc_pc_r = array(
     "s",
     "RS",
 );
+
 $chsc_pc_n = $chsc_pc_r;
+
 $com_bud = array(
     "M",
     "R",
 );
+
 $com_com = $com_bud;
 $com_cond = $com_bud;
 $com_ce = $com_bud;
@@ -345,6 +308,7 @@ $com_dent = $com_bud;
 $com_ffass = $com_bud;
 $com_pharma = $com_bud;
 $com_ret = $com_bud;
+
 $abcd = array(
     "A",
     "B",
@@ -353,8 +317,33 @@ $abcd = array(
     "Z",
 );
 
-// vérifie que la valeur est cohérente selon la colonne
-function verifier($colonne, $valeur)
+// Tell if the session is connected
+function is_connected()
+{
+    if ((empty($_SESSION) == true) ||
+        (array_key_exists("user", $_SESSION) == false) ||
+        (array_key_exists("region", $_SESSION) == false) ||
+        (array_key_exists("privileged", $_SESSION) == false))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// Tell if the session has root priviledges
+function is_privileged()
+{
+    if (is_connected() == false)
+    {
+        return false;
+    }
+
+    return $_SESSION["privileged"];
+}
+
+// Check column data consistency
+function check_column_data($colonne, $valeur)
 {
     global $verification;
 
@@ -364,129 +353,39 @@ function verifier($colonne, $valeur)
     }
     catch(Exception $e)
     {
-        echo $e->getMessage() ; "<br />";
+        echo "<p>Erreur : variable introuvable erreur_message={$e->getMessage()}</p>";
     }
 
-    if (isset($verification[$colonne]))
+    if (isset($verification[$colonne]) == true)
     {
-        $verif_col = $verification[$colonne];
-        if (!isset($verif_col['regex']) || !isset($verif_col['erreur']))
+        if (preg_match($verification[$colonne]["regex"], $valeur) == false)
         {
-            die("Erreur : tableau des vérifications corrompu !");
-        }
-        $regex = $verif_col['regex'];
-        $erreur = $verif_col['erreur'];
-        if (!preg_match($regex, $valeur))
-        {
+            $erreur = "";
+            $erreur .= "<p>Erreur : échec de la vérification de l'entrée colonne=$colonne valeur=$valeur</p>";
+            $erreur .= $verification[$colonne]["erreur"];
             die($erreur);
         }
     }
-    elseif (!empty(${$colonne}))
+    elseif (empty(${$colonne}) == false)
     {
-        if (!in_array($valeur, ${$colonne}))
+        if (in_array($valeur, ${$colonne}) == false)
         {
-            erreur_verification(${$colonne});
+            $erreur = "";
+            $erreur .= "<p>Erreur : échec de la vérification de l'entrée colonne=$colonne valeur=$valeur</p>";
+            $erreur .= "<p>Erreur : seules les entrées ci-dessous sont autorisées</p>";
+            $erreur .= "<ul>";
+            foreach(${$colonne} as $entree)
+            {
+                $erreur .= "<li>$entree</li>";
+            }
+            $erreur .= "</ul>";
+            die($erreur);
         }
     }
     else
     {
-        die("Erreur : aucune vérification implémentée pour $colonne");
+        die("<p>Erreur : aucune vérification implémentée colonne=$colonne</p>");
     }
-}
-
-// Add a new SGPC member and return its identifier
-function sgpc_member_add($lastname, $firstname, $region)
-{
-    verifier("nom", $lastname);
-    verifier("prenom", $firstname);
-    verifier("region", $region);
-
-    $numero_adherent = member_add($lastname, $firstname, $region);
-
-    return $numero_adherent;
-}
-
-// Update SGPC member attribute
-function sgpc_member_update($numero_adherent, $colonne, $valeur)
-{
-    if ($colonne == "numero_adherent")
-    {
-        // Cannot update member identifier
-        return;
-    }
-
-    verifier($colonne, $valeur);
-
-    member_update($numero_adherent, $colonne, $valeur);
-}
-
-// vide l'intégralité de la colonne $col
-// DANGEREUX !!!
-function supprimer_colonne($col)
-{
-    global $colonnes;
-
-    if (is_privileged() == false)
-    {
-        die("Erreur : vous n'avez pas le droit de faire cette opération !");
-    }
-
-    if (in_array($col, $colonnes) == false)
-    {
-        return;
-    }
-
-    $member_list = member_get_list();
-    foreach($member_list as $member)
-    {
-        member_attr_del($member["numero_adherent"], $col);
-    }
-}
-
-// copie la colonne $col1 vers la colonne $col2
-// DANGEREUX !!!
-function copier_colonne($col1, $col2)
-{
-    global $colonnes;
-
-    if (is_privileged() == false)
-    {
-        die("Erreur : vous n'avez pas le droit de faire cette opération !");
-    }
-
-    if ((in_array($col1, $colonnes) == false) || (in_array($col2, $colonnes) == false))
-    {
-        return;
-    }
-
-    $member_list = member_get_list();
-    foreach ($member_list as $member)
-    {
-        if (array_key_exists($col1, $member) == true)
-        {
-            member_update($member["numero_adherent"], $col2, $member[$col1]);
-        }
-        else
-        {
-            member_attr_del($member["numero_adherent"], $col2);
-        }
-    }
-}
-
-// effectue le basculement annuel des cotisations :
-//   - copie des cotisations de l'année vers le bilan de l'année précédente :
-//     - colonne "cotis_payee" copiée dans "adhesion"
-//   - remise à zéro des cotisations de l'année :
-//     - suppression de la colonne "cotis_payee"
-function basculer_cotisations()
-{
-    if (is_privileged() == false)
-    {
-        die("Erreur : vous n'avez pas le droit de faire cette opération !");
-    }
-
-    copier_colonne("cotis_payee", "adhesion");
-    supprimer_colonne("cotis_payee");
 }
 
 ?>

@@ -1,25 +1,32 @@
 body {
-    background-color: #AAAAAA;
+    background-color: #aaaaaa;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #aaaaaa;
 }
 
 #nav {
-    height: 50px;
     display: flex;
     justify-content: center;
 }
 
-.standalone {
-    padding: 5px 5px 5px 5px;
-
-    background-color: #DDDDDD;
-}
-
 .section {
-    margin-left: 200px;
-    margin-right: 200px;
+    margin-left: 100px;
+    margin-right: 100px;
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 5px 5px 5px 5px;
 
-    background-color: #DDDDDD;
+    background-color: #dddddd;
 }
