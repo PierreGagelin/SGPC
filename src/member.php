@@ -70,6 +70,7 @@ function member_del($id)
 function member_update($id, $column, $value)
 {
     $db = db_open();
+    $value = $db->real_escape_string($value);
     $rep = db_query($db, "UPDATE member SET $column = '$value' WHERE numero_adherent = '$id';");
     db_close($db);
 

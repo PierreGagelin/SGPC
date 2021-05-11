@@ -75,7 +75,7 @@ foreach($account_list as $account)
     $page .= "<input type='submit' value='Supprimer'>";
     $page .= "</form></td></tr>";
 }
-$page .= "</table</div>";
+$page .= "</table></div>";
 
 echo $page;
 
