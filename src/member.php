@@ -6,7 +6,7 @@
 
 require_once "database.php";
 
-function member_add($lastname, $firstname, $region)
+function member_add($lastname, $firstname, $region, $id = null)
 {
     $db = db_open();
 
@@ -17,26 +17,29 @@ function member_add($lastname, $firstname, $region)
         goto end;
     }
 
-    // Get last member id
-    $rep = db_query($db, "SELECT * FROM member ORDER BY numero_adherent DESC LIMIT 1;");
-    if ($rep == false)
+    if ($id == null)
     {
-        goto end;
-    }
-    $account = $rep->fetch_array(MYSQLI_ASSOC);
-    if ($account == null)
-    {
-        // Table is empty, we initialize it
-        $id = "AA000";
-    }
-    else
-    {
-        $id = $account["numero_adherent"];
-    }
-    $rep->close();
+        // Get last member id
+        $rep = db_query($db, "SELECT * FROM member ORDER BY numero_adherent DESC LIMIT 1;");
+        if ($rep == false)
+        {
+            goto end;
+        }
+        $account = $rep->fetch_array(MYSQLI_ASSOC);
+        if ($account == null)
+        {
+            // Table is empty, we initialize it
+            $id = "AA000";
+        }
+        else
+        {
+            $id = $account["numero_adherent"];
+        }
+        $rep->close();
 
-    // Alphanumeric incrementation
-    $id++;
+        // Alphanumeric incrementation
+        $id++;
+    }
 
     $query = "";
     $query .= "INSERT INTO member (numero_adherent, nom, prenom, region) ";
@@ -70,6 +73,13 @@ function member_del($id)
 function member_update($id, $column, $value)
 {
     $db = db_open();
+
+    // Some columns are required to be uppercase. I couldn't find a better solution
+    if (($column == "nom") || ($column == "commune"))
+    {
+        $value = mb_strtoupper($value, "UTF-8");
+    }
+
     $value = $db->real_escape_string($value);
     $rep = db_query($db, "UPDATE member SET $column = '$value' WHERE numero_adherent = '$id';");
     db_close($db);
@@ -90,6 +100,24 @@ function member_attr_del($id, $column)
     {
         die("Erreur : échec de la suppression de la colonne de l'adhérent numero_adherent=$id colonne=$column");
     }
+}
+
+function member_exist($id)
+{
+    $exist = false;
+
+    $db = db_open();
+    $rep = db_query($db, "SELECT * FROM member WHERE numero_adherent = '$id';");
+
+    if ($rep->num_rows != 0)
+    {
+        $exist = true;
+    }
+
+    $rep->close();
+    db_close($db);
+
+    return $exist;
 }
 
 function member_get($id)

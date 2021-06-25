@@ -1,0 +1,10 @@
+{
+    "smtp_host": "dummy.org",
+    "smtp_user": "dummy@dummy.com",
+    "smtp_password": "dummy",
+    "smtp_port": 666,
+    "from_addr": "dummy@dummy.com",
+    "from_name": "DUMMY Dummy",
+    "to_addr": "dummy2@dummy.com",
+    "to_name": "DUMMY Dummy2"
+}

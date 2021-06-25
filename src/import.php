@@ -93,17 +93,24 @@ function parse_excel($worksheet)
         $num_ad = $worksheet->getCell($excel_cols["numero_adherent"] . $ligne)->getValue();
         $nom = $worksheet->getCell($excel_cols["nom"] . $ligne)->getValue();
         $prenom = $worksheet->getCell($excel_cols["prenom"] . $ligne)->getValue();
+        $region = $worksheet->getCell($excel_cols["region"] . $ligne)->getValue();
 
         // Force type
         $num_ad = "$num_ad";
         $nom = "$nom";
         $prenom = "$prenom";
+        $region = "$region";
 
-        echo "<p>Traitement de la ligne index=$ligne numero_adherent=$num_ad nom=$nom prenom=$prenom</p>";
+        echo "<p>Traitement de la ligne index=$ligne numero_adherent=$num_ad nom=$nom prenom=$prenom region=$region</p>";
 
         if (empty($num_ad) == true)
         {
             die("Erreur : numéro d'adhérent vide !");
+        }
+
+        if (member_exist($num_ad) == false)
+        {
+            member_add($nom, $prenom, $region, $num_ad);
         }
 
         foreach ($clefs as $clef)

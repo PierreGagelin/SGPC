@@ -27,10 +27,6 @@ foreach($colonnes as $colonne)
 {
     $worksheet->setCellValue($xls_col . $xls_lig, $colonne);
 
-    // Adapt column size to content
-    $dimensions = $worksheet->getColumnDimension($xls_col);
-    $dimensions->setAutoSize(true);
-
     $xls_col++;
 }
 $xls_lig++;

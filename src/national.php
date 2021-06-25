@@ -62,8 +62,9 @@ display_navigation();
 // basculement des cotisations de l'année courante vers la colonne d'archive
 if ((empty($_POST) == false) && (isset($_POST["transition"]) == true))
 {
-    column_copy("cotis_payee", "adhesion");
+    column_copy("cotis_payee", "cotis_payee_prec");
     column_delete("cotis_payee");
+    column_delete("cotis_region");
 
     $message = "";
     $message .= "<div class='section'>";

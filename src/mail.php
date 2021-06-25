@@ -1,27 +1,36 @@
 <?php
 
+# Composer libraries
+require_once "vendor/autoload.php";
+
+# SGPC libraries
 require_once "donnees.php";
 require_once "vue.php";
 
-$contact_sgpc = array(
-    "nom" => "Trésorier National SGPCCFECGC",
-    "adresse" => "sgpc.cfecgctn@gmail.com"
-);
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
-$contact_mail = array(
-    "nom" => "Mailer SGPC",
-    "adresse" => "mailer.sgpc@gmail.com"
-);
+$MAIL_CONFIG_FILE = "mail.json";
+$MAIL_CONFIG = array();
 
-// Adapt newline character
-$mail = $contact_sgpc["adresse"];
-if (preg_match("#^[a-z0-9._-]+@(hotmail|live|msn).[a-z]{2,4}$#", $mail) == false)
+function email_init()
 {
-    $newline = "\r\n";
-}
-else
-{
-    $newline = "\n";
+    global $MAIL_CONFIG_FILE;
+    global $MAIL_CONFIG;
+
+    $json = file_get_contents($MAIL_CONFIG_FILE);
+    if ($json == false)
+    {
+        die("Erreur : échec de la lecture du fichier des paramètres de connexion");
+    }
+
+    // Decode as an associative array
+    $MAIL_CONFIG = json_decode($json, true);
+    if ($MAIL_CONFIG == null)
+    {
+        die("Erreur : échec du décodage JSON des paramètres de connexion");
+    }
 }
 
 function email_display_array($tableau)
@@ -42,67 +51,48 @@ function email_display_member($numero_adherent)
     return $entry;
 }
 
-// Generate email frontiers
-function email_get_frontiers()
+function email_send($subject, $message_html, $message_plain)
 {
-    global $newline;
+    global $MAIL_CONFIG;
 
-    $frontiere = md5(rand());
-    $frontieres = array();
-    $frontieres["frontiere"] = $frontiere;
-    $frontieres["ouverture"] = $newline . "--" . $frontiere . $newline;
-    $frontieres["fermeture"] = $newline . "--" . $frontiere . "--" . $newline;
+    // Passing "true" enables exceptions
+    $mail = new PHPMailer(true);
 
-    return $frontieres;
-}
+    try {
+        // Server settings
+        $mail->isSMTP();
+        $mail->CharSet = "UTF-8";
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-function email_get_header($expediteur, $destinataire, $type, $frontiere)
-{
-    global $newline;
+        $mail->Host = $MAIL_CONFIG["smtp_host"];
+        $mail->Username = $MAIL_CONFIG["smtp_user"];
+        $mail->Password = $MAIL_CONFIG["smtp_password"];
+        $mail->Port = $MAIL_CONFIG["smtp_port"];
 
-    $header = "";
-    $header .= "From: \"{$expediteur["nom"]}\"<{$expediteur["adresse"]}>$newline";
-    $header .= "Reply-to: \"{$expediteur["nom"]}\"<{$expediteur["adresse"]}>$newline";
-    $header .= "MIME-Version: 1.0$newline";
-    $header .= "Content-Type: $type;$newline";
-    $header .= "boundary=\"$frontiere\"$newline";
+        // Recipients
+        $mail->setFrom($MAIL_CONFIG["from_addr"], $MAIL_CONFIG["from_name"]);
+        $mail->addAddress($MAIL_CONFIG["to_addr"], $MAIL_CONFIG["to_name"]);
 
-    return $header;
-}
+        // Content
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $message_html;
+        $mail->AltBody = $message_plain;
 
-function email_get_message($message_html, $message_plain, $frontieres)
-{
-    global $newline;
-
-    $message = "";
-
-    $message .= $frontieres["ouverture"];
-    $message .= "Content-Type: text/plain; charset=\"UTF-8\"$newline";
-    $message .= "Content-Transfer-Encoding: 8bit$newline";
-    $message .= $newline . $message_plain . $newline;
-
-    $message .= $frontieres["ouverture"];
-    $message .= "Content-Type: text/html; charset=\"UTF-8\"$newline";
-    $message .= "Content-Transfer-Encoding: 8bit$newline";
-    $message .= $newline . $message_html . $newline;
-
-    $message .= $frontieres["fermeture"];
-    $message .= $frontieres["fermeture"];
-
-    return $message;
+        $mail->send();
+    } catch (Exception $e) {
+        die("Erreur : échec lors de l'envoi du courrier électronique");
+    }
 }
 
 function email_delete_column($numero_adherent, $colonne, $message, $adherent_legacy)
 {
-    global $contact_sgpc;
-    global $contact_mail;
-
     if (is_connected() == false)
     {
         return;
     }
 
-    $frontieres = email_get_frontiers();
     $session_region = $_SESSION["region"];
     $session_identifiant = $_SESSION["user"];
 
@@ -124,23 +114,17 @@ function email_delete_column($numero_adherent, $colonne, $message, $adherent_leg
     $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
 
     $sujet = "[Mail-Automatique] Suppression d'une information adhérent";
-    $message = email_get_message($message_html, $message_plain, $frontieres);
-    $header = email_get_header($contact_mail, $contact_sgpc, "multipart/alternative", $frontieres["frontiere"]);
 
-    mail($contact_sgpc["adresse"], $sujet, $message, $header);
+    email_send($sujet, $message_html, $message_plain);
 }
 
 function email_add_member($numero_adherent, $message)
 {
-    global $contact_sgpc;
-    global $contact_mail;
-
     if (is_connected() == false)
     {
         return;
     }
 
-    $frontieres = email_get_frontiers();
     $session_region = $_SESSION["region"];
     $session_identifiant = $_SESSION["user"];
 
@@ -160,17 +144,12 @@ function email_add_member($numero_adherent, $message)
     $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
 
     $sujet = "[Mail-Automatique] Création d'un nouvel adhérent";
-    $message = email_get_message($message_html, $message_plain, $frontieres);
-    $header = email_get_header($contact_mail, $contact_sgpc, "multipart/alternative", $frontieres["frontiere"]);
 
-    mail($contact_sgpc["adresse"], $sujet, $message, $header);
+    email_send($sujet, $message_html, $message_plain);
 }
 
 function email_modify_member($modifications, $message, $adherent_legacy)
 {
-    global $contact_sgpc;
-    global $contact_mail;
-
     if ((is_connected() == false) || (isset($modifications["numero_adherent"]) == false))
     {
         return;
@@ -178,7 +157,6 @@ function email_modify_member($modifications, $message, $adherent_legacy)
 
     $numero_adherent = $modifications["numero_adherent"];
 
-    $frontieres = email_get_frontiers();
     $session_region = $_SESSION["region"];
     $session_identifiant = $_SESSION["user"];
 
@@ -202,10 +180,10 @@ function email_modify_member($modifications, $message, $adherent_legacy)
     $message_plain = "Le message est censé s'afficher en HTML avec Gmail!";
 
     $sujet = "[Mail-Automatique] Modification d'un adhérent";
-    $message = email_get_message($message_html, $message_plain, $frontieres);
-    $header = email_get_header($contact_mail, $contact_sgpc, "multipart/alternative", $frontieres["frontiere"]);
 
-    mail($contact_sgpc["adresse"], $sujet, $message, $header);
+    email_send($sujet, $message_html, $message_plain);
 }
+
+email_init();
 
 ?>

@@ -73,14 +73,14 @@ function docker_run()
 # Prepare workspace for SGPC
 function sgpc_workspace()
 {
-    # Get PhpSpreadsheet library up
+    # Get libraries
     docker container exec sgpc composer require --working-dir=/var/www/html phpoffice/phpspreadsheet
+    docker container exec sgpc composer require --working-dir=/var/www/html phpmailer/phpmailer
 
     # Add links to sources into HTML folder
     docker container exec sgpc find /workspace/src -mindepth 1 -maxdepth 1 -type f -exec ln -sft /var/www/html {} \;
 
     # Create output directories
-    docker container exec sgpc mkdir -p /var/www/html/Auvergne
     docker container exec sgpc mkdir -p /var/www/html/Ile-de-France
     docker container exec sgpc mkdir -p /var/www/html/Hauts-de-France
     docker container exec sgpc mkdir -p /var/www/html/National
@@ -116,7 +116,10 @@ function sgpc_database()
     sql_cmd="${sql_cmd} cotis_payee varchar(3),"
     sql_cmd="${sql_cmd} date_paiement varchar(10),"
     sql_cmd="${sql_cmd} p_ou_rien varchar(1),"
-    sql_cmd="${sql_cmd} adhesion varchar(3),"
+    sql_cmd="${sql_cmd} cotis_payee_prec varchar(3),"
+    sql_cmd="${sql_cmd} cotis_date_premiere varchar(4),"
+    sql_cmd="${sql_cmd} cotis_date_derniere varchar(4),"
+    sql_cmd="${sql_cmd} cotis_region varchar(18),"
     sql_cmd="${sql_cmd} adresse_1 varchar(200),"
     sql_cmd="${sql_cmd} adresse_2 varchar(200),"
     sql_cmd="${sql_cmd} code_postal varchar(200),"
@@ -130,16 +133,14 @@ function sgpc_database()
     sql_cmd="${sql_cmd} tel_port varchar(10),"
     sql_cmd="${sql_cmd} tel_prof varchar(10),"
     sql_cmd="${sql_cmd} tel_dom varchar(10),"
-    sql_cmd="${sql_cmd} fonc_nat varchar(3),"
-    sql_cmd="${sql_cmd} fonc_nat_irp varchar(6),"
-    sql_cmd="${sql_cmd} fonc_reg varchar(2),"
-    sql_cmd="${sql_cmd} fonc_reg_irp varchar(6),"
+    sql_cmd="${sql_cmd} fonc_nat_sgpc varchar(3),"
+    sql_cmd="${sql_cmd} fonc_nat_ccse varchar(15),"
+    sql_cmd="${sql_cmd} fonc_reg_sgpc varchar(2),"
+    sql_cmd="${sql_cmd} fonc_reg_cse varchar(14),"
     sql_cmd="${sql_cmd} mail_priv varchar(200),"
     sql_cmd="${sql_cmd} mail_prof varchar(200),"
     sql_cmd="${sql_cmd} remarque_r varchar(200),"
     sql_cmd="${sql_cmd} remarque_n varchar(200),"
-    sql_cmd="${sql_cmd} chsc_pc_r varchar(2),"
-    sql_cmd="${sql_cmd} chsc_pc_n varchar(2),"
     sql_cmd="${sql_cmd} com_bud varchar(1),"
     sql_cmd="${sql_cmd} com_com varchar(1),"
     sql_cmd="${sql_cmd} com_cond varchar(1),"
@@ -159,20 +160,23 @@ function sgpc_database()
     sql_cmd="${sql_cmd} c6 varchar(200),"
     sql_cmd="${sql_cmd} c7 varchar(200),"
     sql_cmd="${sql_cmd} c8 varchar(200),"
-    sql_cmd="${sql_cmd} c9 varchar(200)"
+    sql_cmd="${sql_cmd} c9 varchar(200),"
+    sql_cmd="${sql_cmd} c10 varchar(200),"
+    sql_cmd="${sql_cmd} c11 varchar(200),"
+    sql_cmd="${sql_cmd} c12 varchar(200)"
     sql_cmd="${sql_cmd} );"
     docker container exec sgpc mysql -u root -e "${sql_cmd}"
 
     # Add accounts
     sql_cmd="USE sgpc;"
     sql_cmd="${sql_cmd} INSERT INTO account VALUES ('root', 'root', 'National', 1);"
-    sql_cmd="${sql_cmd} INSERT INTO account VALUES ('user', 'user', 'Auvergne', 0);"
+    sql_cmd="${sql_cmd} INSERT INTO account VALUES ('user', 'user', 'Ile-de-France', 0);"
     docker container exec sgpc mysql -u root -e "${sql_cmd}"
 
     # Add members
     sql_cmd="USE sgpc;"
     sql_cmd="${sql_cmd} INSERT INTO member(numero_adherent, nom, prenom, region) VALUES ('AA001', 'SURLALUNE', 'Toto', 'Ile-de-France');"
-    sql_cmd="${sql_cmd} INSERT INTO member(numero_adherent, nom, prenom, region) VALUES ('AA002', 'DANSTONCUL', 'Lulu', 'Auvergne');"
+    sql_cmd="${sql_cmd} INSERT INTO member(numero_adherent, nom, prenom, region) VALUES ('AA002', 'DANSTONCUL', 'Lulu', 'Hauts-de-France');"
     docker container exec sgpc mysql -u root -e "${sql_cmd}"
 
     # Create SQL user

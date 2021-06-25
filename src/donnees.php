@@ -6,33 +6,34 @@ $colonnes = array(
     "numero_adherent",
     "nom",
     "prenom",
+    "region",
     "cotis_payee",
     "date_paiement",
     "p_ou_rien",
-    "adhesion",
+    "cotis_payee_prec",
+    "cotis_date_premiere",
+    "cotis_date_derniere",
+    "cotis_region",
     "adresse_1",
     "adresse_2",
     "code_postal",
     "commune",
     "ad",
     "profession",
-    "region",
     "echelon",
     "bureau_nat",
     "comite_nat",
     "tel_port",
     "tel_prof",
     "tel_dom",
-    "fonc_nat",
-    "fonc_nat_irp",
-    "fonc_reg",
-    "fonc_reg_irp",
+    "fonc_nat_sgpc",
+    "fonc_nat_ccse",
+    "fonc_reg_sgpc",
+    "fonc_reg_cse",
     "mail_priv",
     "mail_prof",
     "remarque_r",
     "remarque_n",
-    "chsc_pc_r",
-    "chsc_pc_n",
     "com_bud",
     "com_com",
     "com_cond",
@@ -53,6 +54,9 @@ $colonnes = array(
     "c7",
     "c8",
     "c9",
+    "c10",
+    "c11",
+    "c12",
 );
 
 $verification = array(
@@ -76,19 +80,25 @@ $verification = array(
         "erreur" => "<p>Erreur : seules les entrées de la forme '01234' sont autorisées</p>"
     ),
     "commune" => array(
-        "regex" => "#^['A-Z\\\ -]+$#",
+        "regex" => "#^['A-Z\\\, /-]+$#",
         "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
                     "<ul>" .
                     "<li>des lettres de 'A' à 'Z'</li>" .
                     "<li>des apostrophes</li>" .
+                    "<li>des virgules</li>" .
                     "<li>des espaces</li>" .
+                    "<li>des slashs</li>" .
                     "<li>des tirets</li>" .
                     "</ul>"
+    ),
+    "cotis_date_premiere" => array(
+        "regex" => "#^[12][0-9]{3}$#",
+        "erreur" => "<p>Erreur : seules les entrées de la forme 'AAAA' sont autorisées</p>"
     ),
     "date_paiement" => array(
         "regex" => "#^[0123][0-9]/[01][0-9]/[12][0-9]{3}$#",
         "erreur" => "<p>Erreur : seules les entrées de la forme 'JJ/MM/AAAA' sont autorisées</p>"
-        ),
+    ),
     "tel_port" => array(
         "regex" => "#^0[1-9][0-9]{8}$#",
         "erreur" => "<p>Erreur : seules les entrées de la forme '0123456789' sont autorisées</p>"
@@ -129,6 +139,7 @@ $verification = array(
 $verification["adresse_1"] = $verification["remarque_r"];
 $verification["adresse_2"] = $verification["remarque_r"];
 $verification["prenom"] = $verification["nom"];
+$verification["cotis_date_derniere"] = $verification["cotis_date_premiere"];
 $verification["echelon"] = $verification["nom"];
 $verification["tel_prof"] = $verification["tel_port"];
 $verification["tel_dom"] = $verification["tel_port"];
@@ -145,6 +156,9 @@ $verification["c6"] = $verification["remarque_r"];
 $verification["c7"] = $verification["remarque_r"];
 $verification["c8"] = $verification["remarque_r"];
 $verification["c9"] = $verification["remarque_r"];
+$verification["c10"] = $verification["remarque_r"];
+$verification["c11"] = $verification["remarque_r"];
+$verification["c12"] = $verification["remarque_r"];
 $verification["identifiant"] = $verification["remarque_r"];
 $verification["mot_de_passe"] = $verification["remarque_r"];
 
@@ -160,7 +174,7 @@ $p_ou_rien = array(
     "p",
 );
 
-$adhesion = $cotis_payee;
+$cotis_payee_prec = $cotis_payee;
 
 $ad = array(
     "AD",
@@ -186,26 +200,17 @@ $region = array(
     "Occitanie",
     "Grand-Est",
     "Hauts-de-France",
-    "Alsace-Moselle",
-    "Aquitaine",
-    "Auvergne",
     "Bourgogne",
     "Bretagne",
     "Centre",
-    "Nord-Est",
-    "Midi-Pyrenees",
-    "Languedoc",
-    "Centre-Ouest",
-    "Nord-Picardie",
     "Normandie",
     "Ile-de-France",
     "Pays-de-la-Loire",
     "Paca",
-    "Rhone-Alpes",
     "Antilles",
     "Reunion",
-    "RSI",
     "TN",
+    "GN",
 );
 
 $region_compte = array(
@@ -214,28 +219,19 @@ $region_compte = array(
     "Occitanie",
     "Grand-Est",
     "Hauts-de-France",
-    "Alsace-Moselle",
-    "Aquitaine",
-    "Auvergne",
     "Bourgogne",
     "Bretagne",
     "Centre",
-    "Nord-Est",
-    "Midi-Pyrenees",
-    "Languedoc",
-    "Centre-Ouest",
-    "Nord-Picardie",
     "Normandie",
     "Ile-de-France",
     "Pays-de-la-Loire",
     "Paca",
-    "Rhone-Alpes",
     "Antilles",
     "Reunion",
-    "RSI",
-    "TN",
     "National",
 );
+
+$cotis_region = $region;
 
 $bureau_nat = array(
     "1",
@@ -244,7 +240,7 @@ $bureau_nat = array(
 
 $comite_nat = $bureau_nat;
 
-$fonc_nat = array(
+$fonc_nat_sgpc = array(
     "PN",
     "SN",
     "TN",
@@ -255,16 +251,16 @@ $fonc_nat = array(
     "TH",
 );
 
-$fonc_nat_irp = array(
+$fonc_nat_ccse = array(
     "DS",
-    "CCE-T",
-    "CCE-S",
     "RS",
-    "CE-SEC",
-    "CE-TR",
+    "CCSE-titulaire",
+    "CCSE-suppleant",
+    "CCSE-tresorier",
+    "CCSE-secretaire",
 );
 
-$fonc_reg = array(
+$fonc_reg_sgpc = array(
     "P",
     "S",
     "T",
@@ -275,26 +271,14 @@ $fonc_reg = array(
     "PH",
 );
 
-$fonc_reg_irp = array(
+$fonc_reg_cse = array(
     "DS",
-    "DP-T",
-    "CD-T",
-    "DP-S",
-    "CE-S",
     "RS",
-    "CE-SEC",
-    "CE-TR",
+    "CSE-titulaire",
+    "CSE-suppleant",
+    "CSE-tresorier",
+    "CSE-secretaire"
 );
-
-$chsc_pc_r = array(
-    "S",
-    "T",
-    "t",
-    "s",
-    "RS",
-);
-
-$chsc_pc_n = $chsc_pc_r;
 
 $com_bud = array(
     "M",
