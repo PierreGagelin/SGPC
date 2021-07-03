@@ -65,13 +65,13 @@ $verification = array(
         "erreur" => "<p>Erreur : seules les entrées de la forme 'AB012' sont autorisées</p>"
     ),
     "nom" => array(
-        "regex" => "#^[\\p{L}'. \\\-]+$#u",
+        "regex" => "#^[\\p{L} '.-]+$#u",
         "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
                     "<ul>" .
                     "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
-                    "<li>des points</li>" .
                     "<li>des espaces</li>" .
                     "<li>des apostrophes</li>" .
+                    "<li>des points</li>" .
                     "<li>des tirets</li>" .
                     "</ul>"
     ),
@@ -80,13 +80,13 @@ $verification = array(
         "erreur" => "<p>Erreur : seules les entrées de la forme '01234' sont autorisées</p>"
     ),
     "commune" => array(
-        "regex" => "#^['A-Z\\\, /-]+$#",
+        "regex" => "#^[\\p{L} ',/-]+$#u",
         "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
                     "<ul>" .
-                    "<li>des lettres de 'A' à 'Z'</li>" .
+                    "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
+                    "<li>des espaces</li>" .
                     "<li>des apostrophes</li>" .
                     "<li>des virgules</li>" .
-                    "<li>des espaces</li>" .
                     "<li>des slashs</li>" .
                     "<li>des tirets</li>" .
                     "</ul>"
@@ -120,17 +120,17 @@ $verification = array(
                     "</ul>"
     ),
     "remarque_r" => array(
-        "regex" => "#^[\\p{L}0-9\\\,_'. /-]+$#u",
+        "regex" => "#^[\\p{L} '.,_/0-9-]+$#u",
         "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
                     "<ul>" .
                     "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
-                    "<li>des chiffres</li>" .
-                    "<li>des virgules</li>" .
                     "<li>des espaces</li>" .
                     "<li>des apostrophes</li>" .
+                    "<li>des points</li>" .
+                    "<li>des virgules</li>" .
                     "<li>des underscores</li>" .
                     "<li>des slashs</li>" .
-                    "<li>des points</li>" .
+                    "<li>des chiffres</li>" .
                     "<li>des tirets</li>" .
                     "</ul>"
     ),
@@ -195,38 +195,38 @@ $profession = array(
 );
 
 $region = array(
+    "Antilles",
     "Aura",
-    "Nouvelle-Aquitaine",
-    "Occitanie",
-    "Grand-Est",
-    "Hauts-de-France",
     "Bourgogne",
     "Bretagne",
     "Centre",
-    "Normandie",
+    "GN",
+    "Grand-Est",
+    "Hauts-de-France",
     "Ile-de-France",
-    "Pays-de-la-Loire",
+    "Normandie",
+    "Nouvelle-Aquitaine",
+    "Occitanie",
     "Paca",
-    "Antilles",
+    "Pays-de-la-Loire",
     "Reunion",
     "TN",
-    "GN",
 );
 
 $region_compte = array(
+    "Antilles",
     "Aura",
-    "Nouvelle-Aquitaine",
-    "Occitanie",
-    "Grand-Est",
-    "Hauts-de-France",
     "Bourgogne",
     "Bretagne",
     "Centre",
-    "Normandie",
+    "Grand-Est",
+    "Hauts-de-France",
     "Ile-de-France",
-    "Pays-de-la-Loire",
+    "Normandie",
+    "Nouvelle-Aquitaine",
+    "Occitanie",
     "Paca",
-    "Antilles",
+    "Pays-de-la-Loire",
     "Reunion",
     "National",
 );

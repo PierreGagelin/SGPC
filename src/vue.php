@@ -146,11 +146,10 @@ $vue["prenom"] = "<input type='text' name='prenom' maxlength='200'>";
 $vue["cotis_payee"] = "";
 $vue["cotis_payee"] .= "<select name='cotis_payee'>";
 $vue["cotis_payee"] .= "<option value=''>vide</option>";
-$vue["cotis_payee"] .= "<option value='1'>1</option>";
-$vue["cotis_payee"] .= "<option value='2'>2</option>";
-$vue["cotis_payee"] .= "<option value='3'>3</option>";
-$vue["cotis_payee"] .= "<option value='1/2'>1/2</option>";
-$vue["cotis_payee"] .= "<option value='3/2'>3/2</option>";
+foreach($cotis_payee as $key)
+{
+    $vue["cotis_payee"] .= "<option value='$key'>$key</option>";
+}
 $vue["cotis_payee"] .= "</select>";
 
 $vue["date_paiement"] = "<input type='text' name='date_paiement' maxlength='10'>";
@@ -158,7 +157,10 @@ $vue["date_paiement"] = "<input type='text' name='date_paiement' maxlength='10'>
 $vue["p_ou_rien"] = "";
 $vue["p_ou_rien"] .= "<select name='p_ou_rien'>";
 $vue["p_ou_rien"] .= "<option value=''>vide</option>";
-$vue["p_ou_rien"] .= "<option value='p'>p</option>";
+foreach($p_ou_rien as $key)
+{
+    $vue["p_ou_rien"] .= "<option value='$key'>$key</option>";
+}
 $vue["p_ou_rien"] .= "</select>";
 
 $vue["cotis_date_premiere"] = "<input type='text' name='cotis_date_premiere' maxlength='4'>";
@@ -167,32 +169,19 @@ $vue["cotis_date_derniere"] = "<input type='text' name='cotis_date_derniere' max
 $vue["cotis_region"] = "";
 $vue["cotis_region"] .= "<select name='cotis_region'>";
 $vue["cotis_region"] .= "<option value=''>vide</option>";
-$vue["cotis_region"] .= "<option value='Aura'>Aura</option>";
-$vue["cotis_region"] .= "<option value='Nouvelle-Aquitaine'>Nouvelle-Aquitaine</option>";
-$vue["cotis_region"] .= "<option value='Occitanie'>Occitanie</option>";
-$vue["cotis_region"] .= "<option value='Grand-Est'>Grand-Est</option>";
-$vue["cotis_region"] .= "<option value='Hauts-de-France'>Hauts-de-France</option>";
-$vue["cotis_region"] .= "<option value='Bourgogne'>Bourgogne</option>";
-$vue["cotis_region"] .= "<option value='Bretagne'>Bretagne</option>";
-$vue["cotis_region"] .= "<option value='Centre'>Centre</option>";
-$vue["cotis_region"] .= "<option value='Normandie'>Normandie</option>";
-$vue["cotis_region"] .= "<option value='Ile-de-France'>Ile-de-France</option>";
-$vue["cotis_region"] .= "<option value='Pays-de-la-Loire'>Pays-de-la-Loire</option>";
-$vue["cotis_region"] .= "<option value='Paca'>Paca</option>";
-$vue["cotis_region"] .= "<option value='Antilles'>Antilles</option>";
-$vue["cotis_region"] .= "<option value='Reunion'>Reunion</option>";
-$vue["cotis_region"] .= "<option value='TN'>TN</option>";
-$vue["cotis_region"] .= "<option value='GN'>GN</option>";
+foreach($cotis_region as $key)
+{
+    $vue["cotis_region"] .= "<option value='$key'>$key</option>";
+}
 $vue["cotis_region"] .= "</select>";
 
 $vue["cotis_payee_prec"] = "";
 $vue["cotis_payee_prec"] .= "<select name='cotis_payee_prec'>";
 $vue["cotis_payee_prec"] .= "<option value=''>vide</option>";
-$vue["cotis_payee_prec"] .= "<option value='1'>1</option>";
-$vue["cotis_payee_prec"] .= "<option value='2'>2</option>";
-$vue["cotis_payee_prec"] .= "<option value='3'>3</option>";
-$vue["cotis_payee_prec"] .= "<option value='1/2'>1/2</option>";
-$vue["cotis_payee_prec"] .= "<option value='3/2'>3/2</option>";
+foreach($cotis_payee_prec as $key)
+{
+    $vue["cotis_payee_prec"] .= "<option value='$key'>$key</option>";
+}
 $vue["cotis_payee_prec"] .= "</select>";
 
 $vue["adresse_1"] = "<input type='text' name='adresse_1' maxlength='200'>";
@@ -203,64 +192,37 @@ $vue["commune"] = "<input type='text' name='commune' maxlength='200' style='text
 $vue["ad"] = "";
 $vue["ad"] .= "<select name='ad'>";
 $vue["ad"] .= "<option value=''>vide</option>";
-$vue["ad"] .= "<option value='AD'>AD</option>";
-$vue["ad"] .= "<option value='AD-RSI'>AD-RSI</option>";
-$vue["ad"] .= "<option value='AD-RT'>AD-RT</option>";
-$vue["ad"] .= "<option value='AD-ARS'>AD-ARS</option>";
+foreach($ad as $key)
+{
+    $vue["ad"] .= "<option value='$key'>$key</option>";
+}
 $vue["ad"] .= "</select>";
 
 $vue["profession"] = "";
 $vue["profession"] .= "<select name='profession'>";
 $vue["profession"] .= "<option value=''>vide</option>";
-$vue["profession"] .= "<option value='MC'>MC</option>";
-$vue["profession"] .= "<option value='CDC'>CDC</option>";
-$vue["profession"] .= "<option value='PHC'>PHC</option>";
-$vue["profession"] .= "<option value='MCCS'>MCCS</option>";
-$vue["profession"] .= "<option value='CDCCS'>CDCCS</option>";
-$vue["profession"] .= "<option value='PHCCS'>PHCCS</option>";
-$vue["profession"] .= "<option value='MCRA'>MCRA</option>";
-$vue["profession"] .= "<option value='MCR'>MCR</option>";
+foreach($profession as $key)
+{
+    $vue["profession"] .= "<option value='$key'>$key</option>";
+}
 $vue["profession"] .= "</select>";
 
 $vue["region"] = "";
 $vue["region"] .= "<select name='region'>";
 $vue["region"] .= "<option value=''>vide</option>";
-$vue["region"] .= "<option value='Aura'>Aura</option>";
-$vue["region"] .= "<option value='Nouvelle-Aquitaine'>Nouvelle-Aquitaine</option>";
-$vue["region"] .= "<option value='Occitanie'>Occitanie</option>";
-$vue["region"] .= "<option value='Grand-Est'>Grand-Est</option>";
-$vue["region"] .= "<option value='Hauts-de-France'>Hauts-de-France</option>";
-$vue["region"] .= "<option value='Bourgogne'>Bourgogne</option>";
-$vue["region"] .= "<option value='Bretagne'>Bretagne</option>";
-$vue["region"] .= "<option value='Centre'>Centre</option>";
-$vue["region"] .= "<option value='Normandie'>Normandie</option>";
-$vue["region"] .= "<option value='Ile-de-France'>Ile-de-France</option>";
-$vue["region"] .= "<option value='Pays-de-la-Loire'>Pays-de-la-Loire</option>";
-$vue["region"] .= "<option value='Paca'>Paca</option>";
-$vue["region"] .= "<option value='Antilles'>Antilles</option>";
-$vue["region"] .= "<option value='Reunion'>Reunion</option>";
-$vue["region"] .= "<option value='TN'>TN</option>";
-$vue["region"] .= "<option value='GN'>GN</option>";
+foreach($region as $key)
+{
+    $vue["region"] .= "<option value='$key'>$key</option>";
+}
 $vue["region"] .= "</select>";
 
 $vue["region_compte"] = "";
 $vue["region_compte"] .= "<select name='region'>";
 $vue["region_compte"] .= "<option value=''>vide</option>";
-$vue["region_compte"] .= "<option value='Aura'>Aura</option>";
-$vue["region_compte"] .= "<option value='Nouvelle-Aquitaine'>Nouvelle-Aquitaine</option>";
-$vue["region_compte"] .= "<option value='Occitanie'>Occitanie</option>";
-$vue["region_compte"] .= "<option value='Grand-Est'>Grand-Est</option>";
-$vue["region_compte"] .= "<option value='Hauts-de-France'>Hauts-de-France</option>";
-$vue["region_compte"] .= "<option value='Bourgogne'>Bourgogne</option>";
-$vue["region_compte"] .= "<option value='Bretagne'>Bretagne</option>";
-$vue["region_compte"] .= "<option value='Centre'>Centre</option>";
-$vue["region_compte"] .= "<option value='Normandie'>Normandie</option>";
-$vue["region_compte"] .= "<option value='Ile-de-France'>Ile-de-France</option>";
-$vue["region_compte"] .= "<option value='Pays-de-la-Loire'>Pays-de-la-Loire</option>";
-$vue["region_compte"] .= "<option value='Paca'>Paca</option>";
-$vue["region_compte"] .= "<option value='Antilles'>Antilles</option>";
-$vue["region_compte"] .= "<option value='Reunion'>Reunion</option>";
-$vue["region_compte"] .= "<option value='National'>National</option>";
+foreach($region_compte as $key)
+{
+    $vue["region_compte"] .= "<option value='$key'>$key</option>";
+}
 $vue["region_compte"] .= "</select>";
 
 $vue["echelon"] = "<input type='text' name='echelon' maxlength='200'>";
@@ -268,15 +230,19 @@ $vue["echelon"] = "<input type='text' name='echelon' maxlength='200'>";
 $vue["bureau_nat"] = "";
 $vue["bureau_nat"] .= "<select name='bureau_nat'>";
 $vue["bureau_nat"] .= "<option value=''>vide</option>";
-$vue["bureau_nat"] .= "<option value='1'>1</option>";
-$vue["bureau_nat"] .= "<option value='2'>2</option>";
+foreach($bureau_nat as $key)
+{
+    $vue["bureau_nat"] .= "<option value='$key'>$key</option>";
+}
 $vue["bureau_nat"] .= "</select>";
 
 $vue["comite_nat"] = "";
 $vue["comite_nat"] .= "<select name='comite_nat'>";
 $vue["comite_nat"] .= "<option value=''>vide</option>";
-$vue["comite_nat"] .= "<option value='1'>1</option>";
-$vue["comite_nat"] .= "<option value='2'>2</option>";
+foreach($comite_nat as $key)
+{
+    $vue["comite_nat"] .= "<option value='$key'>$key</option>";
+}
 $vue["comite_nat"] .= "</select>";
 
 $vue["tel_port"] = "<input type='text' name='tel_port' maxlength='10'>";
@@ -286,50 +252,37 @@ $vue["tel_dom"] = "<input type='text' name='tel_dom' maxlength='10'>";
 $vue["fonc_nat_sgpc"] = "";
 $vue["fonc_nat_sgpc"] .= "<select name='fonc_nat_sgpc'>";
 $vue["fonc_nat_sgpc"] .= "<option value=''>vide</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='PN'>PN</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='SN'>SN</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='TN'>TN</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='M'>M</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='SNA'>SNA</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='TNA'>TNA</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='VPN'>VPN</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='PH'>PH</option>";
-$vue["fonc_nat_sgpc"] .= "<option value='TH'>TH</option>";
+foreach($fonc_nat_sgpc as $key)
+{
+    $vue["fonc_nat_sgpc"] .= "<option value='$key'>$key</option>";
+}
 $vue["fonc_nat_sgpc"] .= "</select>";
 
 $vue["fonc_nat_ccse"] = "";
 $vue["fonc_nat_ccse"] .= "<select name='fonc_nat_ccse'>";
 $vue["fonc_nat_ccse"] .= "<option value=''>vide</option>";
-$vue["fonc_nat_ccse"] .= "<option value='DS'>DS</option>";
-$vue["fonc_nat_ccse"] .= "<option value='RS'>RS</option>";
-$vue["fonc_nat_ccse"] .= "<option value='CCSE-titulaire'>CCSE-titulaire</option>";
-$vue["fonc_nat_ccse"] .= "<option value='CCSE-suppleant'>CCSE-suppleant</option>";
-$vue["fonc_nat_ccse"] .= "<option value='CCSE-tresorier'>CCSE-tresorier</option>";
-$vue["fonc_nat_ccse"] .= "<option value='CCSE-secretaire'>CCSE-secretaire</option>";
+foreach($fonc_nat_ccse as $key)
+{
+    $vue["fonc_nat_ccse"] .= "<option value='$key'>$key</option>";
+}
 $vue["fonc_nat_ccse"] .= "</select>";
 
 $vue["fonc_reg_sgpc"] = "";
 $vue["fonc_reg_sgpc"] .= "<select name='fonc_reg_sgpc'>";
 $vue["fonc_reg_sgpc"] .= "<option value=''>vide</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='P'>P</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='S'>S</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='T'>T</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='M'>M</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='SA'>SA</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='TA'>TA</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='VP'>VP</option>";
-$vue["fonc_reg_sgpc"] .= "<option value='PH'>PH</option>";
+foreach($fonc_reg_sgpc as $key)
+{
+    $vue["fonc_reg_sgpc"] .= "<option value='$key'>$key</option>";
+}
 $vue["fonc_reg_sgpc"] .= "</select>";
 
 $vue["fonc_reg_cse"] = "";
 $vue["fonc_reg_cse"] .= "<select name='fonc_reg_cse'>";
 $vue["fonc_reg_cse"] .= "<option value=''>vide</option>";
-$vue["fonc_reg_cse"] .= "<option value='DS'>DS</option>";
-$vue["fonc_reg_cse"] .= "<option value='RS'>RS</option>";
-$vue["fonc_reg_cse"] .= "<option value='CSE-titulaire'>CSE-titulaire</option>";
-$vue["fonc_reg_cse"] .= "<option value='CSE-suppleant'>CSE-suppleant</option>";
-$vue["fonc_reg_cse"] .= "<option value='CSE-tresorier'>CSE-tresorier</option>";
-$vue["fonc_reg_cse"] .= "<option value='CSE-secretaire'>CSE-secretaire</option>";
+foreach($fonc_reg_cse as $key)
+{
+    $vue["fonc_reg_cse"] .= "<option value='$key'>$key</option>";
+}
 $vue["fonc_reg_cse"] .= "</select>";
 
 $vue["mail_priv"] = "<input type='text' name='mail_priv' maxlength='200'>";
@@ -340,57 +293,73 @@ $vue["remarque_n"] = "<input type='text' name='remarque_n' maxlength='200'>";
 $vue["com_bud"] = "";
 $vue["com_bud"] .= "<select name='com_bud'>";
 $vue["com_bud"] .= "<option value=''>vide</option>";
-$vue["com_bud"] .= "<option value='M'>M</option>";
-$vue["com_bud"] .= "<option value='R'>R</option>";
+foreach($com_bud as $key)
+{
+    $vue["com_bud"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_bud"] .= "</select>";
 
 $vue["com_com"] = "";
 $vue["com_com"] .= "<select name='com_com'>";
 $vue["com_com"] .= "<option value=''>vide</option>";
-$vue["com_com"] .= "<option value='M'>M</option>";
-$vue["com_com"] .= "<option value='R'>R</option>";
+foreach($com_com as $key)
+{
+    $vue["com_com"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_com"] .= "</select>";
 
 $vue["com_cond"] = "";
 $vue["com_cond"] .= "<select name='com_cond'>";
 $vue["com_cond"] .= "<option value=''>vide</option>";
-$vue["com_cond"] .= "<option value='M'>M</option>";
-$vue["com_cond"] .= "<option value='R'>R</option>";
+foreach($com_cond as $key)
+{
+    $vue["com_cond"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_cond"] .= "</select>";
 
 $vue["com_ce"] = "";
 $vue["com_ce"] .= "<select name='com_ce'>";
 $vue["com_ce"] .= "<option value=''>vide</option>";
-$vue["com_ce"] .= "<option value='M'>M</option>";
-$vue["com_ce"] .= "<option value='R'>R</option>";
+foreach($com_ce as $key)
+{
+    $vue["com_ce"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_ce"] .= "</select>";
 
 $vue["com_dent"] = "";
 $vue["com_dent"] .= "<select name='com_dent'>";
 $vue["com_dent"] .= "<option value=''>vide</option>";
-$vue["com_dent"] .= "<option value='M'>M</option>";
-$vue["com_dent"] .= "<option value='R'>R</option>";
+foreach($com_dent as $key)
+{
+    $vue["com_dent"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_dent"] .= "</select>";
 
 $vue["com_ffass"] = "";
 $vue["com_ffass"] .= "<select name='com_ffass'>";
 $vue["com_ffass"] .= "<option value=''>vide</option>";
-$vue["com_ffass"] .= "<option value='M'>M</option>";
-$vue["com_ffass"] .= "<option value='R'>R</option>";
+foreach($com_ffass as $key)
+{
+    $vue["com_ffass"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_ffass"] .= "</select>";
 
 $vue["com_pharma"] = "";
 $vue["com_pharma"] .= "<select name='com_pharma'>";
 $vue["com_pharma"] .= "<option value=''>vide</option>";
-$vue["com_pharma"] .= "<option value='M'>M</option>";
-$vue["com_pharma"] .= "<option value='R'>R</option>";
+foreach($com_pharma as $key)
+{
+    $vue["com_pharma"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_pharma"] .= "</select>";
 
 $vue["com_ret"] = "";
 $vue["com_ret"] .= "<select name='com_ret'>";
 $vue["com_ret"] .= "<option value=''>vide</option>";
-$vue["com_ret"] .= "<option value='M'>M</option>";
-$vue["com_ret"] .= "<option value='R'>R</option>";
+foreach($com_ret as $key)
+{
+    $vue["com_ret"] .= "<option value='$key'>$key</option>";
+}
 $vue["com_ret"] .= "</select>";
 
 $vue["naissance"] = "<input type='text' name='naissance' maxlength='10'>";
@@ -399,11 +368,10 @@ $vue["entree"] = "<input type='text' name='entree' maxlength='10'>";
 $vue["abcd"] = "";
 $vue["abcd"] .= "<select name='abcd'>";
 $vue["abcd"] .= "<option value=''>vide</option>";
-$vue["abcd"] .= "<option value='A'>A</option>";
-$vue["abcd"] .= "<option value='B'>B</option>";
-$vue["abcd"] .= "<option value='C'>C</option>";
-$vue["abcd"] .= "<option value='D'>D</option>";
-$vue["abcd"] .= "<option value='Z'>Z</option>";
+foreach($abcd as $key)
+{
+    $vue["abcd"] .= "<option value='$key'>$key</option>";
+}
 $vue["abcd"] .= "</select>";
 
 $vue["c1"] = "<input type='text' name='c1' maxlength='200'>";
