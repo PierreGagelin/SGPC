@@ -7,10 +7,20 @@
 require_once "database.php";
 
 // Add an account
-function account_add($user, $password, $region)
+function account_add($user, $password, $region, $privileged)
 {
     $db = db_open();
-    $rep = db_query($db, "INSERT INTO account VALUES ('$user', '$password', '$region', 0);");
+
+    if ($privileged == true)
+    {
+        $privileged = 1;
+    }
+    else
+    {
+        $privileged = 0;
+    }
+
+    $rep = db_query($db, "INSERT INTO account VALUES ('$user', '$password', '$region', $privileged);");
     db_close($db);
 
     if ($rep != true)

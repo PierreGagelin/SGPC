@@ -27,7 +27,7 @@ if ((empty($_POST) == false) && (isset($_POST["ajouter_compte"]) == true))
         check_column_data("mot_de_passe", $_POST["mot_de_passe"]);
         check_column_data("region_compte", $_POST["region"]);
 
-        account_add($_POST["identifiant"], $_POST["mot_de_passe"], $_POST["region"]);
+        account_add($_POST["identifiant"], $_POST["mot_de_passe"], $_POST["region"], isset($_POST["privilege"]));
     }
 }
 
@@ -55,6 +55,7 @@ $page .= "<table>";
 $page .= "<tr><td>region</td><td>{$vue["region_compte"]}</td></tr>";
 $page .= "<tr><td>identifiant</td><td>{$vue["identifiant"]}</td></tr>";
 $page .= "<tr><td>mot de passe</td><td>{$vue["mot_de_passe"]}</td></tr>";
+$page .= "<tr><td>privilèges</td><td>{$vue["privilege"]}</td></tr>";
 $page .= "</table>";
 $page .= "<input type='submit' value='Ajouter'>";
 $page .= "</form>";
@@ -64,11 +65,11 @@ $page .= "</div>";
 $page .= "<div class='section'>";
 $page .= "<h1>Liste des comptes</h1>";
 $page .= "<table>";
-$page .= "<tr><th>Region</th><th>Identifiant</th><th>Mot de passe</th><th>Action</th></tr>";
+$page .= "<tr><th>Region</th><th>Identifiant</th><th>Mot de passe</th><th>Privilèges</th><th>Action</th></tr>";
 $account_list = account_get_list();
 foreach($account_list as $account)
 {
-    $page .= "<tr><td>{$account["region"]}</td><td>{$account["user"]}</td><td>{$account["password"]}</td>";
+    $page .= "<tr><td>{$account["region"]}</td><td>{$account["user"]}</td><td>{$account["password"]}</td><td>{$account["privileged"]}</td>";
     $page .= "<td><form method='post' action='comptes.php'>";
     $page .= "<input type='hidden' name='supprimer_compte'>";
     $page .= "<input type='hidden' name='identifiant' value='{$account["user"]}'>";

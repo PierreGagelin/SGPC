@@ -108,7 +108,7 @@ function display_member_list($page, $type)
     foreach ($member_list as $member)
     {
         // Skip member that don't belong to the region
-        if (($member['region'] != $_SESSION['region']) && (is_privileged() == false))
+        if (($member['region'] != $_SESSION['region']) && ($_SESSION['region'] != "National"))
         {
             continue;
         }
@@ -390,3 +390,4 @@ $vue["c12"] = "<input type='text' name='c12' maxlength='200'>";
 // HTML for account data
 $vue["identifiant"] = "<input type='text' name='identifiant' maxlength='32'>";
 $vue["mot_de_passe"] = "<input type='text' name='mot_de_passe' maxlength='32'>";
+$vue["privilege"] = "<input type='checkbox' name='privilege'>";

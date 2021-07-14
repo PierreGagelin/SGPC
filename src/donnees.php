@@ -120,7 +120,7 @@ $verification = array(
                     "</ul>"
     ),
     "remarque_r" => array(
-        "regex" => "#^[\\p{L} '.,_/0-9-]+$#u",
+        "regex" => "#^[\\p{L} '.,_/@0-9-]+$#u",
         "erreur" => "<p>Erreur : seuls les caractères ci-dessous sont autorisés</p>" .
                     "<ul>" .
                     "<li>des lettres (majuscules, minuscules, accentuées)</li>" .
@@ -130,6 +130,7 @@ $verification = array(
                     "<li>des virgules</li>" .
                     "<li>des underscores</li>" .
                     "<li>des slashs</li>" .
+                    "<li>des arobases</li>" .
                     "<li>des chiffres</li>" .
                     "<li>des tirets</li>" .
                     "</ul>"
